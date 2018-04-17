@@ -1,0 +1,2 @@
+set(caros_common_msgs_MESSAGE_FILES "/home/resps/rovi2/Rovi2/src/caros/core/caros_common_msgs/msg/CarosNodeState.msg;/home/resps/rovi2/Rovi2/src/caros/core/caros_common_msgs/msg/Q.msg")
+set(caros_common_msgs_SERVICE_FILES "/home/resps/rovi2/Rovi2/src/caros/core/caros_common_msgs/srv/ConfigBool.srv;/home/resps/rovi2/Rovi2/src/caros/core/caros_common_msgs/srv/ConfigInt.srv;/home/resps/rovi2/Rovi2/src/caros/core/caros_common_msgs/srv/EmptySrv.srv")

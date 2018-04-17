@@ -1,0 +1,55 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/tjavs/catkin_ws/devel/include",
+                    "/home/tjavs/RobWork/RobWork/src/rw/rw.hpp",
+                    "/opt/ros/kinetic/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_camera/include",
+                    "/home/tjavs/catkin_ws/src/caros/core/caros_common/include",
+                    "/home/tjavs/catkin_ws/src/caros/core/caros_common_robwork/include",
+                    "/home/tjavs/catkin_ws/src/caros/interfaces/caros_control/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_leapmotion/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_netft/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_robotiq/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_schunkpg70/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_sdh/include",
+                    "/home/tjavs/catkin_ws/src/caros/interfaces/caros_sensor/include",
+                    "/home/tjavs/catkin_ws/src/caros/components/caros_teleoperation/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_trakstar/include",
+                    "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_universalrobot/include",
+                    "/home/tjavs/catkin_ws/src/caros/interfaces/caros_control/include/caros/serial_device_si_proxy.h",
+
+                    "/usr/include"
+                ]
+            },
+            "includePath": [
+                "/home/tjavs/catkin_ws/devel/include",
+                "/home/tjavs/RobWork/RobWork/src/rw/rw.hpp",
+                "/opt/ros/kinetic/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_camera/include",
+                "/home/tjavs/catkin_ws/src/caros/core/caros_common/include",
+                "/home/tjavs/catkin_ws/src/caros/core/caros_common_robwork/include",
+                "/home/tjavs/catkin_ws/src/caros/interfaces/caros_control/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_leapmotion/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_netft/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_robotiq/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_schunkpg70/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_sdh/include",
+                "/home/tjavs/catkin_ws/src/caros/interfaces/caros_sensor/include",
+                "/home/tjavs/catkin_ws/src/caros/components/caros_teleoperation/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_trakstar/include",
+                "/home/tjavs/catkin_ws/src/caros/hwcomponents/caros_universalrobot/include",
+                "/home/tjavs/catkin_ws/src/caros/interfaces/caros_control/include/caros/serial_device_si_proxy.h",
+                "/usr/include",
+                "/usr/include/boost/tr1/tr1"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 3
+}

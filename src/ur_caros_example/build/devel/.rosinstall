@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/tjavs/catkin_ws/src/ur_caros_example/build/devel/setup.sh

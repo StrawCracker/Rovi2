@@ -1,0 +1,8 @@
+prefix=/home/resps/rovi2/Rovi2/devel
+
+Name: caros_sensor_msgs
+Description: Description of caros_sensor_msgs
+Version: 0.0.1
+Cflags: -I/home/resps/rovi2/Rovi2/devel/include
+Libs: -L/home/resps/rovi2/Rovi2/devel/lib 
+Requires: caros_common_msgs geometry_msgs message_runtime std_msgs

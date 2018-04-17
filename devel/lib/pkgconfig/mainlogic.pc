@@ -1,0 +1,8 @@
+prefix=/home/resps/rovi2/Rovi2/devel
+
+Name: mainlogic
+Description: Description of mainlogic
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/resps/rovi2/Rovi2/devel/lib 
+Requires: 

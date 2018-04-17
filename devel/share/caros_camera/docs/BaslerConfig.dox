@@ -1,0 +1,22 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~PixelFormat" : \b [str] Pixel format min: , default: BayerRG8, max: 
+- \b "~ExposureAuto" : \b [str] Exposure setting min: , default: Continuous, max: 
+- \b "~GainAuto" : \b [str] Gain setting min: , default: Continuous, max: 
+- \b "~BalanceWhiteAuto" : \b [str] Balance white setting min: , default: Continuous, max: 
+- \b "~GainRaw" : \b [int] A positive integer specifying the gain factor. min: 1, default: 1, max: 3
+- \b "~ExposureTimeRaw" : \b [int] Sets the camera's exposure time in microseconds min: 10, default: 10000, max: 916000
+- \b "~BlackLevelRaw" : \b [int] This boolean value enables the gamma correction min: -128, default: 0, max: 127
+- \b "~GammaEnable" : \b [bool] This boolean value enables the gamma correction min: False, default: False, max: True
+- \b "~Gamma" : \b [double] Sets the 'absolute' value of the acquisition frame rate. The 'absolute' value is a float value that sets the acquisition frame rate in frames per second. min: 0.0, default: 1.0, max: 3.99999
+- \b "~AcquisitionFrameRateEnable" : \b [bool] This boolean value enables setting the camera's acquisition frame rate to a specified value. min: False, default: False, max: True
+- \b "~AcquisitionFrameRateAbs" : \b [double] Sets the 'absolute' value of the acquisition frame rate. The 'absolute' value is a float value that sets the acquisition frame rate in frames per second. min: 0.000466, default: 10.0, max: 1000.0
+- \b "~Width" : \b [int] This value sets the width of the area of interest in pixels. min: 16, default: 1280, max: 1280
+- \b "~Height" : \b [int] This value sets the height of the area of interest in pixels. min: 1, default: 1024, max: 1024
+- \b "~AutoFunctionAOIWidth" : \b [int] This value sets the width of the auto function area of interest in pixels. min: 1, default: 1280, max: 1280
+- \b "~AutoFunctionAOIHeight" : \b [int] This value sets the height of the auto function area of interest in pixels. min: 1, default: 1024, max: 1024
+- \b "~GevSCPSPacketSize" : \b [str] Sets the packet size, must match the Maximum Transfer Unit (MTU) configured for the Network Adapter min: , default: 1500, max: 
+- \b "~GevSCPD" : \b [str] Sets the (Inter packet delay), increase this, if experiencing transmission errors min: , default: 100, max: 
+

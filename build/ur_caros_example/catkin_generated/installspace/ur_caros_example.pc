@@ -1,0 +1,8 @@
+prefix=/home/resps/rovi2/Rovi2/install
+
+Name: ur_caros_example
+Description: Description of ur_caros_example
+Version: 1.0.0
+Cflags: 
+Libs: -L/home/resps/rovi2/Rovi2/install/lib 
+Requires: 
