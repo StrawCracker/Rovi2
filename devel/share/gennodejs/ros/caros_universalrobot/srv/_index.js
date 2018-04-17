@@ -1,22 +1,22 @@
 
 "use strict";
 
-let UrServiceSetIO = require('./UrServiceSetIO.js')
+let UrServiceServoQ = require('./UrServiceServoQ.js')
 let UrServiceEmpty = require('./UrServiceEmpty.js')
 let UrServiceServoT = require('./UrServiceServoT.js')
-let UrServiceServoQ = require('./UrServiceServoQ.js')
-let UrServicePayload = require('./UrServicePayload.js')
-let UrServiceForceModeStop = require('./UrServiceForceModeStop.js')
 let UrServiceForceModeStart = require('./UrServiceForceModeStart.js')
+let UrServicePayload = require('./UrServicePayload.js')
 let UrServiceForceModeUpdate = require('./UrServiceForceModeUpdate.js')
+let UrServiceSetIO = require('./UrServiceSetIO.js')
+let UrServiceForceModeStop = require('./UrServiceForceModeStop.js')
 
 module.exports = {
-  UrServiceSetIO: UrServiceSetIO,
+  UrServiceServoQ: UrServiceServoQ,
   UrServiceEmpty: UrServiceEmpty,
   UrServiceServoT: UrServiceServoT,
-  UrServiceServoQ: UrServiceServoQ,
-  UrServicePayload: UrServicePayload,
-  UrServiceForceModeStop: UrServiceForceModeStop,
   UrServiceForceModeStart: UrServiceForceModeStart,
+  UrServicePayload: UrServicePayload,
   UrServiceForceModeUpdate: UrServiceForceModeUpdate,
+  UrServiceSetIO: UrServiceSetIO,
+  UrServiceForceModeStop: UrServiceForceModeStop,
 };

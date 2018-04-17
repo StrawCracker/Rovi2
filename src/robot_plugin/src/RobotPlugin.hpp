@@ -3,9 +3,8 @@
 
 
 #include <RobWorkStudioConfig.hpp> // For RWS_USE_QT5 definition
-
-#include "/home/jacob/Desktop/Rovi2Project/catkin_ws/build/robot_plugin/ui_RobotPlugin.h"
-#include </home/jacob/Desktop/Rovi2Project/catkin_ws/src/Project_lib/CellManager.hpp>
+#include "/home/resps/rovi2/Rovi2/build/robot_plugin/ui_RobotPlugin.h"
+#include </home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp>
 #include "qtros.h"
 #include <ros/ros.h>
 #include <rws/RobWorkStudioPlugin.hpp>

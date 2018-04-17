@@ -1,10 +1,10 @@
 
 "use strict";
 
-let CarosNodeState = require('./CarosNodeState.js');
 let Q = require('./Q.js');
+let CarosNodeState = require('./CarosNodeState.js');
 
 module.exports = {
-  CarosNodeState: CarosNodeState,
   Q: Q,
+  CarosNodeState: CarosNodeState,
 };

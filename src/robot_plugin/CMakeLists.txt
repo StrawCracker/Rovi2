@@ -115,7 +115,7 @@ OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED
 set(SrcFiles
 	src/RobotPlugin.cpp
         src/qtros.cpp
-        /home/jacob/Desktop/Rovi2Project/catkin_ws/src/Project_lib/CellManager.cpp
+        /home/resps/rovi2/Rovi2/src/Project_lib/CellManager.cpp
 	${UIS_OUT_H}
 )
 

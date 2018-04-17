@@ -5,12 +5,12 @@
 #include <qtimer.h>
 #include <QPushButton>
 #include <rw/loaders.hpp>
-#include </home/jacob/Desktop/Rovi2Project/catkin_ws/src/Project_lib/CellManager.hpp>
+#include </home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp>
 
 
 
 #define deviceName "UR1"
-#define workcellPath "/home/jacob/Desktop/Rovi2Project/catkin_ws/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
+#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
 
 using namespace rw::common;
 using namespace rw::kinematics;

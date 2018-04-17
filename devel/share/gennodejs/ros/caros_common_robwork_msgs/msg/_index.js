@@ -1,10 +1,10 @@
 
 "use strict";
 
-let RwState = require('./RwState.js');
 let RwStateData = require('./RwStateData.js');
+let RwState = require('./RwState.js');
 
 module.exports = {
-  RwState: RwState,
   RwStateData: RwStateData,
+  RwState: RwState,
 };
