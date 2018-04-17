@@ -1,28 +1,46 @@
 #include <ros/ros.h>
-// PCL specific includes
-#include <sensor_msgs/PointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl_ros/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl_ros/transforms.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/transformation_from_correspondences.h>
 
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <cameranode/Point.h>
+//in case of dual subscription
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
 
-class PCLPointCloud2;
 ros::Publisher pub;
 
 void 
-cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+cloud_cb (const sensor_msgs::ImageConstPtr& left_image_msg, const sensor_msgs::ImageConstPtr& right_image_msg)
+//cloud_cb (const sensor_msgs::ImageConstPtr& image_msg)
 {
-  // Container for original & filtered data
-  pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2; 
+  //CV_BRIDGE is used to convert the ros message image to an opencv mat
+  //cv_bridge is an interface between ros and opencv (well like a bridge)
+  cv_bridge::CvImagePtr cv_left_ptr;
+  cv_bridge::CvImagePtr cv_right_ptr;
+  cv_left_ptr = cv_bridge::toCvCopy(left_image_msg, sensor_msgs::image_encodings::RGB8);
+  cv_right_ptr = cv_bridge::toCvCopy(right_image_msg, sensor_msgs::image_encodings::RGB8);
 
-  sensor_msgs::PointCloud2* out = new sensor_msgs::PointCloud2;
+  //any code would go here
 
+
+  ROS_INFO("the callback is started");
+
+  ROS_INFO("creating the point to send");
+  
+  
+  
+  //Here the output variable is initialized
+  cameranode::Point* temp = new cameranode::Point;
+  temp->x = 1.0;
+  temp->y = 1.5;
+  temp->z = 0.5;
+  
   // Publish the data
-  pub.publish (*out);
+  ROS_INFO("point is being send");
+  pub.publish(*temp);
 }
 
 int
@@ -31,12 +49,22 @@ main (int argc, char** argv)
   // Initialize ROS
   ros::init (argc, argv, "my_pcl_tutorial");
   ros::NodeHandle nh;
+  ROS_INFO("handler has been initialized");
+  // Create a ROS subscriber for the input image
+ // ros::Subscriber sub = nh.subscribe<sensor_msgs::Image> ("input", 1, cloud_cb);
+ // ROS_INFO("subscriber is initialized");
+//use below instead to subscribe to multiple topics
 
-  // Create a ROS subscriber for the input point cloud
-  ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("input", 1, cloud_cb);
+  message_filters::Subscriber<sensor_msgs::Image> left_image(nh, "/camera/left/image_raw", 1);
+  message_filters::Subscriber<sensor_msgs::Image> right_image(nh, "/camera/right/image_raw", 1);
+ 
+  message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::Image> sync(left_image, right_image, 10);
 
-  // Create a ROS publisher for the output point cloud
-  pub = nh.advertise<sensor_msgs::PointCloud2> ("transformed/output", 1);
+  sync.registerCallback(cloud_cb);
+
+  // Create a ROS publisher for the output point
+  pub = nh.advertise<cameranode::Point> ("cameranode/output", 1);
   // Spin
-  ros::spin ();
+  ROS_INFO("publisher is initialised");
+  ros::spin();
 }

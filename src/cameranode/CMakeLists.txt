@@ -15,15 +15,19 @@ find_package(catkin REQUIRED COMPONENTS
   caros_control_msgs
   caros_control
   caros_common
-  pcl_conversions
-  pcl_ros
+  cv_bridge
+  image_transport
 #
 )
-
 
 #add_service_files(
 #  FILES  
 #)
+
+add_message_files(
+  FILES
+  Point.msg
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -43,7 +47,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES beginner_tutorials
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
