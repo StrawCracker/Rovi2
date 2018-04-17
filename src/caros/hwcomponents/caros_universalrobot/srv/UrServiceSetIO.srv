@@ -1,0 +1,8 @@
+# IO pin to set high or low
+int8 pin
+
+# True means the output is high
+bool value
+---
+# If the service request was acknowledged
+bool success

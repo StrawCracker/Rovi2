@@ -1,0 +1,26 @@
+<package format="2">
+<!-- Package Metadata -->
+<name>caros_leapmotion</name>
+  <version>1.0.0</version>
+  <description>
+    Publishes the leapmotion data the same way as trakstar, to allow for a drop in replacement.
+    Since no physical button is present, a fist would be equivilant to releasing the button in the trakstar
+  </description>
+  <maintainer email="niki@mmmi.sdu.dk">Nikolaj Iversen</maintainer>
+  <license>BSD 3 clause</license>
+
+  <!-- Required by Catkin -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>sensor_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>roslint</depend>
+  <depend>caros_common</depend>
+  <depend>caros_sensor</depend>
+  <depend>message_runtime</depend>
+  <depend>geometry_msgs</depend>
+  <depend>caros_common_msgs</depend>
+  <depend>caros_sensor_msgs</depend>
+  <depend>std_msgs</depend>
+</package>
+

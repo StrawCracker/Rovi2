@@ -1,0 +1,7 @@
+<launch>
+	<node pkg="caros_leapmotion" type="caros_leapmotion_node" name="caros_leapmotion" output="screen">
+		<!-- Set the ROS parameters -->
+		<param name="rate" type="int" value="50" />
+		<param name="frame" type="str" value="leapmotion_base" />
+	</node>
+</launch>
