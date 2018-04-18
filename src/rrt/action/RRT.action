@@ -1,10 +1,10 @@
 #goal definition
 int32 order
-float64[] path
-
+float64[6] start
+float64[6] end
 ---
 #result definition
-int32[] sequence
+float64[] path
 bool isGood
 ---
 #feedback

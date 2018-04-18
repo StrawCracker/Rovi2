@@ -1,0 +1,52 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/resps/rovi2/Rovi2/devel/include",
+                    "/opt/ros/kinetic/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_camera/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/core/caros_common/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/core/caros_common_robwork/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_control/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_leapmotion/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_netft/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_robotiq/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_schunkpg70/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_sdh/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_sensor/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/components/caros_teleoperation/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_trakstar/include",
+                    "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_universalrobot/include",
+                    "/usr/include"
+                ]
+            },
+            "includePath": [
+                "/home/resps/rovi2/Rovi2/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_camera/include",
+                "/home/resps/rovi2/Rovi2/src/caros/core/caros_common/include",
+                "/home/resps/rovi2/Rovi2/src/caros/core/caros_common_robwork/include",
+                "/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_control/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_leapmotion/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_netft/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_robotiq/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_schunkpg70/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_sdh/include",
+                "/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_sensor/include",
+                "/home/resps/rovi2/Rovi2/src/caros/components/caros_teleoperation/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_trakstar/include",
+                "/home/resps/rovi2/Rovi2/src/caros/hwcomponents/caros_universalrobot/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 3
+}
