@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>rrt</name>
   <version>0.0.0</version>
   <description>node for RRT planning</description>
@@ -39,31 +39,31 @@
   <!-- <run_depend>message_runtime</run_depend>-->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
- <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>rospy</build_depend>
+  <build_depend>cameranode</build_depend>
+  <exec_depend>cameranode</exec_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
   <build_depend>roscpp</build_depend>
-  <build_depend>roslib</build_depend>
+  <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>caros_common_msgs</build_depend>
-  <build_depend>caros_common_robwork</build_depend>
-  <build_depend>caros_control_msgs</build_depend>
-  <build_depend>caros_common</build_depend>
-  <build_depend>caros_control</build_depend>
-  <build_depend>serial_device_si_proxy</build_depend>
-  <build_depend>pcl_conversions</build_depend>
-  <build_depend>pcl_ros</build_depend>
-  <build_depend>libpcl-all-dev</build_depend>
 
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>roslib</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>pcl_conversions</run_depend>
-  <run_depend>pcl_ros</run_depend>
-  <run_depend>libpcl-all</run_depend>
+  <build_export_depend>actionlib</build_export_depend>
+  <build_export_depend>actionlib_msgs</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>message_generation</build_export_depend>
+  <build_export_depend>cameranode</build_export_depend>
 
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>actionlib_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

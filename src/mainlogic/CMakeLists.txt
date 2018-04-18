@@ -5,6 +5,8 @@ project(mainlogic)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  actionlib
+  actionlib_msgs
   sensor_msgs
   roscpp
   rospy
@@ -15,11 +17,12 @@ find_package(catkin REQUIRED COMPONENTS
   caros_control_msgs
   caros_control
   caros_common
-  pcl_conversions
-  pcl_ros
-#
+  cameranode
+  collision
+  rrt
 )
 
+find_package(Boost REQUIRED COMPONENTS system)
 
 #add_service_files(
 #  FILES  
@@ -27,8 +30,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
-  std_msgs
+  DEPENDENCIES actionlib_msgs std_msgs
 )
 
 ###################################
@@ -43,7 +45,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES beginner_tutorials
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime actionlib_msgs
 #  DEPENDS system_lib
 )
 
@@ -56,6 +58,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
 )
 
 # We use the settings that robwork studio uses
@@ -114,12 +117,6 @@ FIND_PACKAGE(Qt5Widgets REQUIRED)
 #OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
 #QT5_ADD_RESOURCES(RccSrcFiles resources.qrc)
-set(SrcFiles
-	src/rrt.cpp
-#        src/qtros.cpp
-#	${UIS_OUT_H}
-)
-
 
 set(ROS_BUILD_STATIC_LIBS false)
 set(ROS_BUILD_SHARED_LIBS true)
@@ -127,8 +124,19 @@ set(ROS_BUILD_SHARED_LIBS true)
 #target_link_libraries(RWSPlugin ${catkin_LIBRARIES})
 #add_library(rrt ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 add_executable(mainlogic src/mainlogic.cpp)
-target_link_libraries(mainlogic ${catkin_LIBRARIES})
-add_dependencies(mainlogic ${catkin_EXPORTED_TARGETS}})
+
+target_link_libraries(
+  mainlogic
+  ${catkin_LIBRARIES}
+)
+
+add_dependencies(
+  mainlogic
+  ${catkin_EXPORTED_TARGETS}
+  ${mainlogic_EXPORTED_TARGETS}
+  collision_generate_messages_cpp
+  rrt_generate_messages_cpp
+)
 #
 
 ## Declare a cpp library
