@@ -1,8 +1,0 @@
-prefix=/home/resps/rovi2/Rovi2/install
-
-Name: cameranode
-Description: Description of cameranode
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/resps/rovi2/Rovi2/install/lib 
-Requires: 

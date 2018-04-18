@@ -1,2 +1,0 @@
-set(caros_sensor_msgs_MESSAGE_FILES "/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_sensor_msgs/msg/ButtonSensorState.msg;/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_sensor_msgs/msg/PoseSensorState.msg;/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_sensor_msgs/msg/TactileArrayData.msg;/home/resps/rovi2/Rovi2/src/caros/interfaces/caros_sensor_msgs/msg/TactileArrayState.msg")
-set(caros_sensor_msgs_SERVICE_FILES "")

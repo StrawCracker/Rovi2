@@ -1,8 +1,0 @@
-prefix=/home/resps/rovi2/Rovi2/install
-
-Name: caros_common
-Description: Description of caros_common
-Version: 0.0.1
-Cflags: -I/home/resps/rovi2/Rovi2/install/include
-Libs: -L/home/resps/rovi2/Rovi2/install/lib -lcaros_common
-Requires: caros_common_msgs message_runtime roscpp std_msgs

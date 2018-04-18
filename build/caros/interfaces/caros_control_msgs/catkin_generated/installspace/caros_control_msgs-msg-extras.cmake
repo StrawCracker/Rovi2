@@ -1,2 +1,0 @@
-set(caros_control_msgs_MESSAGE_FILES "msg/GripperState.msg;msg/RobotState.msg")
-set(caros_control_msgs_SERVICE_FILES "srv/GripperGripQ.srv;srv/GripperMoveQ.srv;srv/GripperSetForceQ.srv;srv/GripperSetVelocityQ.srv;srv/GripperStopMovement.srv;srv/SerialDeviceForceControlStart.srv;srv/SerialDeviceForceControlStop.srv;srv/SerialDeviceForceControlUpdate.srv;srv/SerialDeviceMoveLin.srv;srv/SerialDeviceMovePtp.srv;srv/SerialDeviceMovePtpT.srv;srv/SerialDeviceMoveServoQ.srv;srv/SerialDeviceMoveServoT.srv;srv/SerialDeviceMoveVelQ.srv;srv/SerialDeviceMoveVelT.srv")
