@@ -84,9 +84,7 @@ void RobotPlugin::initialize()
 {
         getRobWorkStudio()->stateChangedEvent().add(boost::bind(&RobotPlugin::stateChangedListener, this, _1), this);
 
-        CellMan._device = CellMan._wc->findDevice(deviceName);
-        if(CellMan._device==NULL)
-                std::cout<<"No device found!\n";
+        
         //CellMan = CellManager();
         //CellMan.spawnBall();
         //CellMan.setBallSize(0.1);
@@ -157,7 +155,22 @@ void RobotPlugin::btnPressed()
         }
         else if(obj == btn_getQ)
         {
-                CellMan.inCollision();
+                std::cout<<"Creating qPath\n";
+                std::vector<rw::math::Q> testPath;
+
+                for(int i =0;i<2;i++)
+                {
+                        rw::math::Q q = CellMan.randomQ();
+                        std::cout<<q<<"\n";
+                        testPath.push_back(q);
+
+                }
+                
+
+                
+                        
+
+                //CellMan.inCollision();
                 log().info() << "Current Joint configurtation:\n";
                 rw::math::Q q = _qtRos->getQ();
                 log().info() << q << "\n";
