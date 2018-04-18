@@ -43,8 +43,10 @@ public:
   void executeCB(const collision::CollisionGoalConstPtr &goal)
   {
     //do any action codin here
+    //convert CollisionGoal from vector to QPath
 
-    
+
+    //as_.setSucceeded(result_); will become succeeded and publish the result
   }
 
 

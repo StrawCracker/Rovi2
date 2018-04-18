@@ -43,6 +43,11 @@ public:
   void executeCB(const rrt::RRTGoalConstPtr &goal)
   {
     //any action coding done here
+    
+    
+
+    //convert result to QPath and send on RRTResult
+    //as_.setSucceeded(result_); will become succeeded and publish the result
   }
 
 
