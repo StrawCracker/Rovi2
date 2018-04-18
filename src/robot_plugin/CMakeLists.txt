@@ -126,7 +126,7 @@ set(ROS_BUILD_SHARED_LIBS true)
 #target_link_libraries(RWSPlugin ${catkin_LIBRARIES})
 add_library(robot_plugin ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 target_link_libraries(robot_plugin ${catkin_LIBRARIES})
-add_dependencies(robot_plugin ${catkin_EXPORTED_TARGETS}})
+add_dependencies(robot_plugin ${catkin_EXPORTED_TARGETS})
 #
 
 ## Declare a cpp library
