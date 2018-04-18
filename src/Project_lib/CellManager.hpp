@@ -37,8 +37,14 @@ public:
 	rw::models::WorkCell::Ptr _wc;
 	rw::kinematics::State _state;
 	rw::models::Device::Ptr _device;
+
+	static double *pathToDouble(rw::trajectory::Path< rw::math::Q > path,int& size);
+	rw::math::Q randomQ();
 private:	
 
+	rw::math::Q qMin;
+    rw::math::Q qMax;
+    
 	rw::proximity::CollisionDetector::Ptr detector;
 	//CollisionDetector detector;
 	rw::kinematics::MovableFrame* mBallFrame;

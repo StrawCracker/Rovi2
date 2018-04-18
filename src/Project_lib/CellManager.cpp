@@ -6,7 +6,7 @@
 
 
 
-#define deviceName "UR5"
+#define deviceName "UR1"
 #define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
 
 using namespace rw::common;
@@ -21,8 +21,15 @@ CellManager::CellManager()
 {
         // Auto load workcell
         _wc = rw::loaders::WorkCellLoader::Factory::load(workcellPath);
+        
         if(_wc==NULL)
                 std::cout<< "Der er ikke fundet en workcell"<< std::endl; 
+
+
+        _device = _wc->findDevice(deviceName);
+        if(_device==NULL)
+                std::cout<<"No device found!\n";
+
         _state = _wc->getDefaultState();
         spawnBall();
 
@@ -31,6 +38,10 @@ CellManager::CellManager()
         moveBall(0.0,0.0,1.2);
         setBallSize(0.1);
         moveBall(0.0,0.0,1.2);
+
+        qMin = _device->getBounds().first;
+        qMax = _device->getBounds().second;
+        rw::math::Math::seed();
         
                
 }
@@ -202,3 +213,41 @@ bool CellManager::setBallSize(double radius)
         return true;
 }
 
+
+
+double *CellManager::pathToDouble(rw::trajectory::Path< rw::math::Q > path, int& size)
+{
+        ///Example usage:
+        // int size =0;
+        // double *testArr = CellManager::pathToDouble(testPath,size);
+        // std::cout<<"Size "<<size<<"\n";
+
+
+        path.size();
+
+        size =path.size()*6;
+
+        double  resPath[size];
+        for(int i =0; i< path.size();i++)
+        {
+                resPath[i]=path[i](0);
+                resPath[i+1]=path[i](1);
+                resPath[i+2]=path[i](2);
+                resPath[i+3]=path[i](3);
+                resPath[i+4]=path[i](4);
+                resPath[i+5]=path[i](5);
+
+        }
+        for(int i =0; i<size;i++)
+        {
+                std::cout<<resPath[i]<<"\n";
+        }
+
+        return resPath;
+}
+
+rw::math::Q CellManager::randomQ()
+{
+    return rw::math::Math::ranQ(qMin,qMax);
+
+}
