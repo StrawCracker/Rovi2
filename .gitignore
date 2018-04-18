@@ -6,3 +6,5 @@ devel/
 build/
 
 \.vscode/
+
+rwsettings\.xml
