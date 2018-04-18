@@ -1,42 +1,49 @@
 #include <ros/ros.h>
-// PCL specific includes
-#include <sensor_msgs/PointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl_ros/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl_ros/transforms.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/transformation_from_correspondences.h>
+#include <actionlib/client/simple_action_client.h>
+#include <actionlib/client/terminal_state.h>
+#include <collision/CollisionAction.h>
+#include <rrt/RRTAction.h>
+#include <rw/math/Q.hpp>
+#include <rw/trajectory.hpp>
 
-
-class PCLPointCloud2;
-ros::Publisher pub;
-
-void 
-cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+int main (int argc, char **argv)
 {
-  // Container for original & filtered data
-  pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2; 
+  ros::init(argc, argv, "mainlogic");
 
-  sensor_msgs::PointCloud2* out = new sensor_msgs::PointCloud2;
+  // create the action client
+  // true causes the client to spin its own thread
+  actionlib::SimpleActionClient<collision::CollisionAction> ac_col("collisionDetector", true);
+  actionlib::SimpleActionClient<rrt::RRTAction> ac_rrt("RRT_Planner", true);
+  //fibonacci is the name of the server to connect to
 
-  // Publish the data
-  pub.publish (*out);
-}
+  ROS_INFO("Waiting for action servers to start.");
+  // wait for the action server to start
+  ac_col.waitForServer(); //will wait for infinite time
+  ac_rrt.waitForServer();
 
-int
-main (int argc, char** argv)
-{
-  // Initialize ROS
-  ros::init (argc, argv, "my_pcl_tutorial");
-  ros::NodeHandle nh;
+  ROS_INFO("Action servers started, sending goal.");
+  // send a goal to the action
+  collision::CollisionGoal goal_col;
+  rrt::RRTGoal goal_rrt;
+  goal_col.order = 20;
+  goal_rrt.order = 20;
+  ac_col.sendGoal(goal_col);
+  ac_rrt.sendGoal(goal_rrt);
 
-  // Create a ROS subscriber for the input point cloud
-  ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("input", 1, cloud_cb);
+  //wait for the action to return
+  //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
+  bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(30.0));
 
-  // Create a ROS publisher for the output point cloud
-  pub = nh.advertise<sensor_msgs::PointCloud2> ("transformed/output", 1);
-  // Spin
-  ros::spin ();
+  if (finished_before_timeout)
+  {
+    actionlib::SimpleClientGoalState state = ac_col.getState();
+    ROS_INFO("Action collision finished: %s",state.toString().c_str());
+    state = ac_rrt.getState();
+    ROS_INFO("Action rrt finished: %s",state.toString().c_str());
+  }
+  else
+    ROS_INFO("Action did not finish before the time out.");
+
+  //exit
+  return 0;
 }

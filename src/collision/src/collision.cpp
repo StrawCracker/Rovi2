@@ -1,42 +1,60 @@
 #include <ros/ros.h>
-// PCL specific includes
-#include <sensor_msgs/PointCloud2.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl_ros/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl_ros/transforms.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/transformation_from_correspondences.h>
+#include <actionlib/server/simple_action_server.h>
+#include <collision/CollisionAction.h>
+#include <cameranode/Point.h>
+#include <std_msgs/String.h>
+#include <iostream>
+#include <rw/math/Q.hpp>
+#include <rw/trajectory.hpp>
 
-
-class PCLPointCloud2;
-ros::Publisher pub;
-
-void 
-cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
+class CollisionDetector
 {
-  // Container for original & filtered data
-  pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2; 
+protected:
+  ros::NodeHandle nh_;
+  actionlib::SimpleActionServer<collision::CollisionAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
+ // ros::Subscriber sub = nh_.subscribe<cameranode::Point> ("/cameranode/output", 1, );
+  std::string action_name_;
+  // create messages that are used to published feedback/result
+  collision::CollisionFeedback feedback_;
+  collision::CollisionResult result_;
+  ros::Subscriber sub_;
+  cameranode::Point ballPoint_;// = new cameranode::Point;
 
-  sensor_msgs::PointCloud2* out = new sensor_msgs::PointCloud2;
+public:
 
-  // Publish the data
-  pub.publish (*out);
-}
+  CollisionDetector(std::string name) :
+    //as_(nh_, name, boost::bind(&CollisionDetector::executeCB, this, _1), false),
+    as_(nh_, name, boost::bind(&CollisionDetector::executeCB, this, _1), false),
+    action_name_(name)
+  {
+    sub_ = nh_.subscribe("/cameranode/output",1,&CollisionDetector::cloud_cb, this);
+    as_.start();
+  }
 
-int
-main (int argc, char** argv)
+  ~CollisionDetector(void)
+  {
+  }
+  
+  void cloud_cb(cameranode::Point point)
+  {
+    ballPoint_ = point;
+  }
+  
+  void executeCB(const collision::CollisionGoalConstPtr &goal)
+  {
+    //do any action codin here
+  }
+
+
+};
+
+
+int main(int argc, char** argv)
 {
-  // Initialize ROS
-  ros::init (argc, argv, "my_pcl_tutorial");
-  ros::NodeHandle nh;
+  ros::init(argc, argv, "collision_server");
 
-  // Create a ROS subscriber for the input point cloud
-  ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("input", 1, cloud_cb);
+  CollisionDetector temp("collisionDetector");
+  ros::spin();
 
-  // Create a ROS publisher for the output point cloud
-  pub = nh.advertise<sensor_msgs::PointCloud2> ("transformed/output", 1);
-  // Spin
-  ros::spin ();
+  return 0;
 }
