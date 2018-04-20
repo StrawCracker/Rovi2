@@ -22,6 +22,7 @@ protected:
   collision::CollisionResult result_;
   ros::Subscriber sub_;
   cameranode::Point ballPoint_;// = new cameranode::Point;
+  CellManager Cellman;
 
 public:
 
@@ -32,6 +33,9 @@ public:
   {
     sub_ = nh_.subscribe("/cameranode/output",1,&CollisionDetector::cloud_cb, this);
     as_.start();
+    ballPoint_.x=-1;
+    ballPoint_.y=-1;
+    ballPoint_.z=-1;
   }
 
   ~CollisionDetector(void)
@@ -49,7 +53,39 @@ public:
     //convert CollisionGoal from vector to QPath
     rw::trajectory::Path<rw::math::Q> path = getPath(goal->path);
     
-    //as_.setSucceeded(result_); will become succeeded and publish the result
+    Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+
+    std::cout<<"Placed ball at "<< ballPoint_<<std::endl;
+
+    rw::math::Q qLast;// = path.back();
+    //path.pop_back();
+    std::cout<<"Got Q \n"<< "Size of path " << path.size()<<std::endl;
+
+    bool collisionFree = true;
+
+    for(int i =1;i< path.size() && collisionFree ;i++)
+    //while(collisionFree && !path.empty())
+    {
+      std::cout<<"While! \n";
+      //auto qNew = path
+      collisionFree= !collisionInPath(path[i],path[i-1]);
+
+      //qLast=qNew;
+    }
+
+    //Debug
+    if(collisionFree)
+    {
+      std::cout << "Clear \n";
+    }
+    else
+    {
+      std::cout << "STOP!!! \n";
+    }
+
+    result_.isGood = collisionFree;
+    
+    as_.setSucceeded(result_); //will become succeeded and publish the result
   }
 
   rw::trajectory::Path<rw::math::Q> getPath(std::vector<double> vec)
@@ -67,6 +103,71 @@ public:
 
     return rw::trajectory::Path<rw::math::Q>(vecQ);
 
+  }
+
+  bool collisionInPath(rw::math::Q q1, rw::math::Q q2)
+  {
+    //extended binary
+    double eps =0.01;
+
+
+    rw::math::Q delta_Q = q2-q1;
+    int n_b = delta_Q.norm2()/eps; //Number steps q1->q2
+    int levels = ceil(log2(n_b)); //log2(n_b)
+
+    //Debug
+    std::cout << "    "<<q1<<std::endl;
+    std::cout << "    "<<q2<<std::endl;
+    std::cout << "    Number of checks: " << n_b << std::endl;
+    
+
+
+    int counter2 = 0;
+    for(int i = 1; i <= levels; i++)
+    {
+        double steps = pow(2, i-1);
+        rw::math::Q step = (delta_Q/delta_Q.norm2())*((eps*pow(2,levels))/steps);
+        for(int j = 1; j <= steps; j++)
+        {
+            rw::math::Q q_i = q1+(j-0.5)*step;
+            if(pastQ(q1, q2, q_i))
+            {
+                continue;
+            }
+
+            Cellman._device->setQ(q_i,Cellman._state);
+            //device->setQ(q_i, state);
+            //CollisionDetector::QueryResult data;
+            counter2++;
+            //if(detector->inCollision(state,&data))
+            if(Cellman.inCollision())
+            {
+                
+                std::cout << "collision detected at " << q_i << std::endl;
+                std::cout << "after " << i << " steps" << std::endl;
+                return true;
+            }
+        }
+        
+    }
+
+    return false;
+  }
+
+  bool pastQ(rw::math::Q q1, rw::math::Q q2, rw::math::Q qi)
+  {
+      rw::math::Q delta_q = (q2 - q1);
+      delta_q = delta_q * 0.005;
+      double temp1 = (qi-q2).norm2();
+      double temp2 = (qi-(q2+delta_q)).norm2();
+      if(temp1 > temp2)
+      {
+          return true;
+      }
+      else
+      {
+          return false;
+      }
   }
 
 

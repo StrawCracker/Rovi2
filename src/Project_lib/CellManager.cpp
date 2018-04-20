@@ -54,7 +54,7 @@ bool CellManager::inCollision()
 {
         rw::proximity::CollisionDetector::QueryResult data;       
         bool colFrom = detector->inCollision(_state,&data);
-        std::cout<<"Collision " << colFrom <<"\n";
+        //std::cout<<"Collision " << colFrom <<"\n";
         if (colFrom) {
                 //cerr << "Configuration in collision: " << q << endl;
                 std::cout << "Colliding frames: " << std::endl;

@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 
   ROS_INFO("Waiting for action servers to start.");
   // wait for the action server to start
-  //ac_col.waitForServer(); //will wait for infinite time
+  ac_col.waitForServer(); //will wait for infinite time
   //ac_rrt.waitForServer();
 
   ROS_INFO("Action servers started, sending goal.");
@@ -76,32 +76,58 @@ int main (int argc, char **argv)
 
   goal_rrt.order = 20;
 
+
+
+
+
   std::vector<double> testd;
-  for(int i = 0;i<12;i++)
-    testd.push_back(i*0.1);
+  //Home pos
+  testd.push_back(0);
+  testd.push_back(-1.57);
+  testd.push_back(0);
+  testd.push_back(-1.57);
+  testd.push_back(0);
+  testd.push_back(0);
+
+  //Start pos from sim
+  testd.push_back(-1.6);
+  testd.push_back(-1.73);
+  testd.push_back(-2.2);
+  testd.push_back(-0.81);
+  testd.push_back(1.6);
+  testd.push_back(-0.03);
+
+  //"Fuck the computer" posistion aka forced collision
+  // testd.push_back(0.6);
+  // testd.push_back(-0.2);
+  // testd.push_back(0);
+  // testd.push_back(-1.57);
+  // testd.push_back(0);
+  // testd.push_back(0);
 
   rw::trajectory::Path<rw::math::Q> pathTest = getPath(testd);
   std::cout<<pathTest[0]<<"\n";
-  std::cout<<pathTest[1]<<"\n";
+  std::cout<<pathTest[1]<<"\n\n\n";
 
 
   //Works!!
-  //addPathToColl(testPath,goal_col);
+  addPathToColl(pathTest,goal_col);
   
   
   
   ac_col.sendGoal(goal_col);
-  ac_rrt.sendGoal(goal_rrt);
+  //ac_rrt.sendGoal(goal_rrt);
   //wait for the action to return
-  //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
-  bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(30.0));
+  bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
+  //bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(30.0));
 
   if (finished_before_timeout)
   {
     actionlib::SimpleClientGoalState state = ac_col.getState();
     ROS_INFO("Action collision finished: %s",state.toString().c_str());
-    state = ac_rrt.getState();
-    ROS_INFO("Action rrt finished: %s",state.toString().c_str());
+    
+    //state = ac_rrt.getState();
+    //ROS_INFO("Action rrt finished: %s",state.toString().c_str());
   }
   else
     ROS_INFO("Action did not finish before the time out.");
