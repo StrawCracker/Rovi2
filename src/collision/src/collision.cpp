@@ -4,8 +4,11 @@
 #include <cameranode/Point.h>
 #include <std_msgs/String.h>
 #include <iostream>
+
 #include <rw/math/Q.hpp>
 #include <rw/trajectory.hpp>
+
+#include "/home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp"
 
 class CollisionDetector
 {
@@ -44,9 +47,26 @@ public:
   {
     //do any action codin here
     //convert CollisionGoal from vector to QPath
-
-
+    rw::trajectory::Path<rw::math::Q> path = getPath(goal->path);
+    
     //as_.setSucceeded(result_); will become succeeded and publish the result
+  }
+
+  rw::trajectory::Path<rw::math::Q> getPath(std::vector<double> vec)
+  {
+  
+    std::vector<rw::math::Q> vecQ;
+
+    int numberOfQ = vec.size()/6;
+
+    for(int i =0;i<numberOfQ;i++)
+    {
+      rw::math::Q q(6, vec[i*6], vec[i*6+1], vec[i*6+2], vec[i*6+3], vec[i*6+4], vec[i*6+5]); 
+      vecQ.push_back(q); 
+    }
+
+    return rw::trajectory::Path<rw::math::Q>(vecQ);
+
   }
 
 
@@ -56,7 +76,7 @@ public:
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "collision_server");
-
+  
   CollisionDetector temp("collisionDetector");
   ros::spin();
 

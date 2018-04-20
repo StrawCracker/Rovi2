@@ -43,7 +43,7 @@ public:
   void executeCB(const rrt::RRTGoalConstPtr &goal)
   {
     //any action coding done here
-    
+    //rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
     
 
     //convert result to QPath and send on RRTResult

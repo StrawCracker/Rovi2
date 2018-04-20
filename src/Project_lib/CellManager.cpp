@@ -215,36 +215,7 @@ bool CellManager::setBallSize(double radius)
 
 
 
-double *CellManager::pathToDouble(rw::trajectory::Path< rw::math::Q > path, int& size)
-{
-        ///Example usage:
-        // int size =0;
-        // double *testArr = CellManager::pathToDouble(testPath,size);
-        // std::cout<<"Size "<<size<<"\n";
 
-
-        path.size();
-
-        size =path.size()*6;
-
-        double  resPath[size];
-        for(int i =0; i< path.size();i++)
-        {
-                resPath[i]=path[i](0);
-                resPath[i+1]=path[i](1);
-                resPath[i+2]=path[i](2);
-                resPath[i+3]=path[i](3);
-                resPath[i+4]=path[i](4);
-                resPath[i+5]=path[i](5);
-
-        }
-        for(int i =0; i<size;i++)
-        {
-                std::cout<<resPath[i]<<"\n";
-        }
-
-        return resPath;
-}
 
 rw::math::Q CellManager::randomQ()
 {

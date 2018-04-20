@@ -7,7 +7,7 @@
 //#include "/home/resps/rovi2/Rovi2/build/robot_plugin/ui_RobotPlugin.h"
 #include <ros/ros.h>
 //#include <rw/rw.hpp>
-#include <rws/RobWorkStudioPlugin.hpp>
+//#include <rws/RobWorkStudioPlugin.hpp>
 #include <rw/models.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/models/Device.hpp>
@@ -38,7 +38,7 @@ public:
 	rw::kinematics::State _state;
 	rw::models::Device::Ptr _device;
 
-	static double *pathToDouble(rw::trajectory::Path< rw::math::Q > path,int& size);
+	
 	rw::math::Q randomQ();
 private:	
 
