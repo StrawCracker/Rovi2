@@ -131,7 +131,7 @@ target_link_libraries(
 
 add_dependencies(
   rrt_server
-  ${rrt_EXPORTED_TARGETS}
+  ${rrt_server_EXPORTED_TARGETS}
   cameranode_generate_messages_cpp
 )
 #

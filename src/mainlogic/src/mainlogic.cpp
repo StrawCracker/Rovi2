@@ -6,7 +6,12 @@
 #include <rw/math/Q.hpp>
 #include <rw/trajectory.hpp>
 
+#include <chrono>
+#include <ctime>
 
+
+std::chrono::steady_clock::time_point start;
+std::chrono::steady_clock::time_point end;
 
 
 
@@ -53,10 +58,34 @@ void addPathToColl(rw::trajectory::Path<rw::math::Q> path, collision::CollisionG
 
 }
 
+void doneCb_col(const actionlib::SimpleClientGoalState& state,
+            const collision::CollisionResultConstPtr& result)
+{
+
+  end = std::chrono::steady_clock::now() ;
+
+  typedef std::chrono::duration<int,std::milli> millisecs_t ;
+  millisecs_t duration( std::chrono::duration_cast<millisecs_t>(end-start) ) ;
+  std::cout << duration.count() << " milliseconds.\n" ;
+
+  ROS_INFO("Finished in state [%s]", state.toString().c_str());
+  ROS_INFO("Answer: %i", result->isGood);
+  //ros::shutdown();
+}
+
+void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
+            const rrt::RRTResultConstPtr& result)
+{
+
+  ROS_INFO("Finished in state [%s]", state.toString().c_str());
+  ROS_INFO("Answer: %i", result->path);
+  //ros::shutdown();
+}
+
 int main (int argc, char **argv)
 {
   ros::init(argc, argv, "mainlogic");
-
+  rw::math::Q temp2(6, 1, 2, 3, 4, 5, 6);
   // create the action client
   // true causes the client to spin its own thread
   actionlib::SimpleActionClient<collision::CollisionAction> ac_col("collisionDetector", true);
@@ -114,8 +143,9 @@ int main (int argc, char **argv)
   addPathToColl(pathTest,goal_col);
   
   
-  
-  ac_col.sendGoal(goal_col);
+  start = std::chrono::steady_clock::now() ;
+  ac_col.sendGoal(goal_col, &doneCb_col);
+
   //ac_rrt.sendGoal(goal_rrt);
   //wait for the action to return
   bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
@@ -124,8 +154,10 @@ int main (int argc, char **argv)
   if (finished_before_timeout)
   {
     actionlib::SimpleClientGoalState state = ac_col.getState();
-    ROS_INFO("Action collision finished: %s",state.toString().c_str());
-    
+    //ROS_INFO("Action collision finished: %s",state.toString().c_str());
+    ROS_INFO("I finished fast");
+    //actionlib::SimpleActionClient<collision::CollisionAction>::ResultConstPtr result = ac_col.getResult();
+    //ROS_INFO("Result from collision free is: %s", result);
     //state = ac_rrt.getState();
     //ROS_INFO("Action rrt finished: %s",state.toString().c_str());
   }

@@ -4,6 +4,8 @@
 #include <cameranode/Point.h>
 #include <std_msgs/String.h>
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 #include <rw/math/Q.hpp>
 #include <rw/trajectory.hpp>
@@ -51,6 +53,7 @@ public:
   {
     //do any action codin here
     //convert CollisionGoal from vector to QPath
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() ;
     rw::trajectory::Path<rw::math::Q> path = getPath(goal->path);
     
     Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
@@ -84,6 +87,11 @@ public:
     }
 
     result_.isGood = collisionFree;
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now() ;
+
+    typedef std::chrono::duration<int,std::milli> millisecs_t ;
+    millisecs_t duration( std::chrono::duration_cast<millisecs_t>(end-start) ) ;
+    std::cout << duration.count() << " milliseconds.\n" ;
     
     as_.setSucceeded(result_); //will become succeeded and publish the result
   }
@@ -177,7 +185,7 @@ public:
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "collision_server");
-  
+
   CollisionDetector temp("collisionDetector");
   ros::spin();
 

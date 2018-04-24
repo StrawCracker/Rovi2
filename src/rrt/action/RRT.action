@@ -8,5 +8,4 @@ float64[] path
 bool isGood
 ---
 #feedback
-int32[] sequence
 bool isGoodSoFar
