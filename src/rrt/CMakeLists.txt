@@ -128,7 +128,7 @@ set(ROS_BUILD_SHARED_LIBS true)
 
 #target_link_libraries(RWSPlugin ${catkin_LIBRARIES})
 #add_library(rrt ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-add_executable(rrt_server src/rrt.cpp /home/resps/rovi2/Rovi2/src/Project_lib/CellManager.cpp src/qTree.cpp)
+add_executable(rrt_server src/rrt.cpp /home/resps/rovi2/Rovi2/src/Project_lib/CellManager.cpp src/qTree.h)
 
 target_link_libraries(
   rrt_server

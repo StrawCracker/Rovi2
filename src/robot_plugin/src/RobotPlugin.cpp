@@ -83,7 +83,10 @@ void RobotPlugin::newState(rw::math::Q pos)
 void RobotPlugin::initialize()
 {
         getRobWorkStudio()->stateChangedEvent().add(boost::bind(&RobotPlugin::stateChangedListener, this, _1), this);
-
+        
+        
+        rw::math::Q test2(2,2,2); 
+	std::cout <<"Length of test2: "<< test2.norm2()<<"\n";
         
         //CellMan = CellManager();
         //CellMan.spawnBall();

@@ -11,10 +11,10 @@ using namespace rw::math;
 class qTree
 {
     private:
-        Q *data;
         qTree *parent;
         int id;
     public:
+        Q *data;
         qTree();
         qTree(Q * data);
         qTree(Q * data, qTree * parent);
