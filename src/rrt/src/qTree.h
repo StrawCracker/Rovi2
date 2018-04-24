@@ -11,56 +11,35 @@ using namespace rw::math;
 class qTree
 {
     private:
-        qTree *parent;
         int id;
     public:
-        Q *data;
+        int parent;
+        Q data;
         qTree();
-        qTree(Q * data);
-        qTree(Q * data, qTree * parent);
-        // void initTree(Q& qInit);
-        void setParent(qTree * parent);
-        qTree *getParent();
-        void setNodeData(Q * data);
+        qTree(Q data);
+        qTree(Q data, int parent);
+        
 };
 
 qTree :: qTree()
 {
-    this->parent = nullptr;
-    this->data = nullptr;
+    parent = -1;
+    data = rw::math::Q(6,0,0,0,0,0,0);
 }
 
-qTree :: qTree(Q * data) 
+qTree :: qTree(Q data) 
 {
-    this->parent = nullptr;
+    parent = -1;
     this->data = data;
 }
 
-qTree :: qTree(Q * data, qTree * parent)
+qTree :: qTree(Q data, int parent)
 {
     this->parent = parent;
     this->data = data;
 }
 
-// void qTree :: initTree(Q qInit)
-// {
-//     qTree()
-// }
 
-void qTree :: setNodeData(Q * data)
-{
-    this->data = data;
-}
-
-void qTree::setParent(qTree * parent)
-{
-    this->parent = parent;
-}
-
-qTree * qTree::getParent()
-{
-    return this->parent;
-}
 
 // int main()
 // {

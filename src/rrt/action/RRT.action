@@ -1,7 +1,7 @@
 #goal definition
 int32 order
-float64[6] start
-float64[6] end
+float64[] start
+float64[] end
 ---
 #result definition
 float64[] path

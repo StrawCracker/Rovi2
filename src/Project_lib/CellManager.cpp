@@ -57,11 +57,11 @@ bool CellManager::inCollision()
         //std::cout<<"Collision " << colFrom <<"\n";
         if (colFrom) {
                 //cerr << "Configuration in collision: " << q << endl;
-                std::cout << "Colliding frames: " << std::endl;
-                rw::kinematics::FramePairSet fps = data.collidingFrames;
-                for (rw::kinematics::FramePairSet::iterator it = fps.begin(); it != fps.end(); it++) {
-                        std::cout << (*it).first->getName() << " " << (*it).second->getName() << std::endl;
-                }
+                //std::cout << "Colliding frames: " << std::endl;
+                // rw::kinematics::FramePairSet fps = data.collidingFrames;
+                // for (rw::kinematics::FramePairSet::iterator it = fps.begin(); it != fps.end(); it++) {
+                //         std::cout << (*it).first->getName() << " " << (*it).second->getName() << std::endl;
+                // }
                 return true;
         }
         return false;

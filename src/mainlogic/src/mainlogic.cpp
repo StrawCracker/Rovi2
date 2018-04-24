@@ -94,8 +94,8 @@ int main (int argc, char **argv)
 
   ROS_INFO("Waiting for action servers to start.");
   // wait for the action server to start
-  ac_col.waitForServer(); //will wait for infinite time
-  //ac_rrt.waitForServer();
+  //ac_col.waitForServer(); //will wait for infinite time
+  ac_rrt.waitForServer();
 
   ROS_INFO("Action servers started, sending goal.");
   // send a goal to the action
@@ -107,13 +107,13 @@ int main (int argc, char **argv)
 
 
 
-
+  // test for collision
 
   std::vector<double> testd;
   //Home pos
   testd.push_back(0);
   testd.push_back(-1.57);
-  testd.push_back(0);
+  testd.push_back(0 );
   testd.push_back(-1.57);
   testd.push_back(0);
   testd.push_back(0);
@@ -140,26 +140,51 @@ int main (int argc, char **argv)
 
 
   //Works!!
-  addPathToColl(pathTest,goal_col);
+  //addPathToColl(pathTest,goal_col);
   
   
   //start = std::chrono::steady_clock::now() ;
-  ac_col.sendGoal(goal_col, &doneCb_col);
+  //ac_col.sendGoal(goal_col, &doneCb_col);
 
-  //ac_rrt.sendGoal(goal_rrt);
+
+//Test rrt
+std::vector<double> testRRTStart;
+std::vector<double> testRRTEnd;
+  //Home pos
+  testRRTStart.push_back(0);
+  testRRTStart.push_back(-1.57);
+  testRRTStart.push_back(0 );
+  testRRTStart.push_back(-1.57);
+  testRRTStart.push_back(0);
+  testRRTStart.push_back(0);
+
+  //Start pos from sim
+  testRRTEnd.push_back(-1.6);
+  testRRTEnd.push_back(-1.73);
+  testRRTEnd.push_back(-2.2);
+  testRRTEnd.push_back(-0.81);
+  testRRTEnd.push_back(1.6);
+  testRRTEnd.push_back(-0.03);
+  
+
+  goal_rrt.start=testRRTStart;
+  goal_rrt.end=testRRTEnd;
+
+
+  ac_rrt.sendGoal(goal_rrt);
   //wait for the action to return
-  bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
-  //bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(30.0));
+  //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
+  bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(30.0));
 
   if (finished_before_timeout)
   {
-    actionlib::SimpleClientGoalState state = ac_col.getState();
+    //actionlib::SimpleClientGoalState state = ac_col.getState();
     //ROS_INFO("Action collision finished: %s",state.toString().c_str());
-    ROS_INFO("I finished fast");
+    //ROS_INFO("I finished fast");
     //actionlib::SimpleActionClient<collision::CollisionAction>::ResultConstPtr result = ac_col.getResult();
     //ROS_INFO("Result from collision free is: %s", result);
-    //state = ac_rrt.getState();
-    //ROS_INFO("Action rrt finished: %s",state.toString().c_str());
+    actionlib::SimpleClientGoalState state = ac_rrt.getState();
+    ROS_INFO("Action rrt finished: %s",state.toString().c_str());
   }
   else
     ROS_INFO("Action did not finish before the time out.");

@@ -4,6 +4,7 @@
 #include <cameranode/Point.h>
 #include <std_msgs/String.h>
 #include <iostream>
+#include <time.h> 
 #include <rw/math/Q.hpp>
 #include <rw/trajectory.hpp>
 #include "/home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp"
@@ -22,7 +23,7 @@ protected:
   ros::Subscriber sub_;
   cameranode::Point ballPoint_;// = new cameranode::Point;
   CellManager Cellman;
-  vector<qTree*> tree;
+  vector<qTree> tree;
 
 public:
 
@@ -33,10 +34,16 @@ public:
 	{
 		sub_ = nh_.subscribe("/cameranode/output",1,&RRT_Planner::cloud_cb, this);
 		as_.start();
+		ballPoint_.x=-1;
+		ballPoint_.y=-1;
+		ballPoint_.z=-1;
+		srand (time(NULL));
 	}
 
 	~RRT_Planner(void)
 	{
+		tree.clear();
+		tree.shrink_to_fit();
 	}
 
 	void cloud_cb(cameranode::Point point)
@@ -48,63 +55,83 @@ public:
 	{
 	//any action coding done here
 	//rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
-	
+
+	//Place ball;
+	Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+
+	//convert start and goal
 	rw::math::Q qstart(6,goal->end[0],goal->end[1],goal->end[2],goal->end[3],goal->end[4],goal->end[5]);
 	rw::math::Q qgoal(6,goal->start[0],goal->start[1],goal->start[2],goal->start[3],goal->start[4],goal->start[5]);
 	
-	addQ(&qstart,nullptr);
+	addQ(qstart,-1);
 
 	rw::trajectory::Path<rw::math::Q> path;
 
 	double eps = 0.1;
+	double closeToGoal=100;
 	while(true)
 	{
-		std::cout<<"Tree size: "<<tree.size()<<"\n";
+		std::cout<<"\n\nTree size: "<<tree.size()<<"\n";
 		//Sample random point
 		rw::math::Q randomPoint = Cellman.randomQ();
 
+		if((rand() % 100)<=20)
+			randomPoint = qgoal;
+
+
+		//std::cout<<"Starting nearestNeighbour\n";
 		//Find nearest neighbour
-		qTree* neighbour = nearestNeighbour(randomPoint);
-		rw::math::Q qneighbour = *(neighbour->data);
+		int neighbour = nearestNeighbour(randomPoint);
+		//std::cout<<"Ending nearestNeighbour\n\n";
+		rw::math::Q qneighbour = (tree[neighbour].data);
 
 
 		//Normalize
 		rw::math::Q neighToRand= randomPoint-qneighbour;
 		neighToRand=(neighToRand/neighToRand.norm2())*eps;
+		
 
 		rw::math::Q newPoint = qneighbour+ neighToRand;
-
+		//std::cout<<"Checking collision\n";
 		//Check for collision
 		if(collisionInPath(newPoint,qneighbour))
 			continue;
 
-		addQ(&newPoint, neighbour);
-
+		addQ(newPoint, neighbour);
+		//addQ(&newPoint, nullptr);
 
 		//Check if it's done
 		double distToGoal = (qgoal-newPoint).norm2();
+		if(distToGoal<closeToGoal)
+		{
+			closeToGoal=distToGoal;
+			//std::cout<<"Dist mini: "<< closeToGoal<<"\n";
+		}
+		//std::cout<<"DistToGoal: "<< distToGoal<<"\n";
 		if(distToGoal<eps)
 		{
+
 			if(collisionInPath(newPoint,qgoal))
 				continue;
+			std::cout<<"GOAL#################################\n";
 			
 			//Add path to return it
 			path.push_back(qgoal);
 			path.push_back(newPoint);
 			
 
-			qTree* traceBackLeaf = neighbour;
+			int traceBackLeaf = neighbour;
 
-			while(traceBackLeaf->getParent()!=nullptr)
+			while(tree[traceBackLeaf].parent!=-1)
 			{
-				path.push_back(*(traceBackLeaf->data));
+				path.push_back(tree[traceBackLeaf].data);
 
-				traceBackLeaf=traceBackLeaf->getParent();
+				traceBackLeaf=tree[traceBackLeaf].parent;
 
 			}
-			path.push_back(*(traceBackLeaf->data));
+			path.push_back(tree[traceBackLeaf].data);
 
-			path.push_back(qstart);
+			//path.push_back(qstart);
 			break;
 
 
@@ -141,13 +168,15 @@ public:
 		return resPath;
 	}
 
-	qTree* nearestNeighbour(rw::math::Q point)
+	int nearestNeighbour(rw::math::Q point)
 	{
 		int closest =-1; 
 		double smallestDist=1000;
 		for(int i =0; i<tree.size();i++)
 		{
-			double dist=(*(tree[i]->data)-point).norm2();
+			
+			double dist=((tree[i].data)-point).norm2();
+			
 			if(dist<smallestDist)
 			{
 				smallestDist = dist;
@@ -155,18 +184,19 @@ public:
 			}
 
 		}
-
-		return tree[closest];
+		//std::cout<<"\tNearest index: "<<closest<<"\n";
+		//std::cout<<"\tsmallestDist: "<<smallestDist<<"\n";
+		return closest;
 	}
 
 	
 
 	
 
-	void addQ(Q * qNode_, qTree * qParent_)
+	void addQ(Q qNode_, int qParent_)
 	{
 		qTree qNode(qNode_, qParent_);
-		tree.push_back(&qNode);
+		tree.push_back(qNode);
 	}
 
 	bool collisionInPath(rw::math::Q newPoint, rw::math::Q neighbor)
