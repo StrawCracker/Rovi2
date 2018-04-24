@@ -5,6 +5,12 @@ project(rrt)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  caros_common_msgs
+  caros_common_robwork
+  caros_control_msgs
+  caros_control
+  caros_common
+
   actionlib
   actionlib_msgs
   message_generation
@@ -122,7 +128,7 @@ set(ROS_BUILD_SHARED_LIBS true)
 
 #target_link_libraries(RWSPlugin ${catkin_LIBRARIES})
 #add_library(rrt ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-add_executable(rrt_server src/rrt.cpp)
+add_executable(rrt_server src/rrt.cpp /home/resps/rovi2/Rovi2/src/Project_lib/CellManager.cpp src/qTree.cpp)
 
 target_link_libraries(
   rrt_server
