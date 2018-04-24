@@ -62,11 +62,11 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
             const collision::CollisionResultConstPtr& result)
 {
 
-  end = std::chrono::steady_clock::now() ;
+  //end = std::chrono::steady_clock::now() ;
 
-  typedef std::chrono::duration<int,std::milli> millisecs_t ;
-  millisecs_t duration( std::chrono::duration_cast<millisecs_t>(end-start) ) ;
-  std::cout << duration.count() << " milliseconds.\n" ;
+  //typedef std::chrono::duration<int,std::milli> millisecs_t ;
+  //millisecs_t duration( std::chrono::duration_cast<millisecs_t>(end-start) ) ;
+  //std::cout << duration.count() << " milliseconds.\n" ;
 
   ROS_INFO("Finished in state [%s]", state.toString().c_str());
   ROS_INFO("Answer: %i", result->isGood);
@@ -143,7 +143,7 @@ int main (int argc, char **argv)
   addPathToColl(pathTest,goal_col);
   
   
-  start = std::chrono::steady_clock::now() ;
+  //start = std::chrono::steady_clock::now() ;
   ac_col.sendGoal(goal_col, &doneCb_col);
 
   //ac_rrt.sendGoal(goal_rrt);

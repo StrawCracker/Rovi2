@@ -17,6 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
   caros_common
   cv_bridge
   image_transport
+  pcl_conversions
+  pcl_ros
 #
 )
 
