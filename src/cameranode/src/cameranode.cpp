@@ -10,6 +10,10 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 
+#include <pcl_ros/transforms.h>
+#include <pcl/common/transforms.h>
+#include <pcl/common/transformation_from_correspondences.h>
+
 ros::Publisher pub;
 
 void 
@@ -23,6 +27,48 @@ cloud_cb (const sensor_msgs::ImageConstPtr& left_image_msg, const sensor_msgs::I
   cv_left_ptr = cv_bridge::toCvCopy(left_image_msg, sensor_msgs::image_encodings::RGB8);
   cv_right_ptr = cv_bridge::toCvCopy(right_image_msg, sensor_msgs::image_encodings::RGB8);
 
+  pcl::TransformationFromCorrespondences transform_c;
+  Eigen::Vector3f temp_Rob;
+  Eigen::Vector3f temp_Cam;
+
+  temp_Rob << -0.21761, 0.13545, 0.24925;
+  temp_Cam << -0.2682437310635091, -0.2736683456482534, 0.9606027429852959;
+  transform_c.add(temp_Cam, temp_Rob, 1);
+
+  temp_Rob << -0.51464, -0.22904, -0.7502;
+  temp_Cam << 0.1478706777689268, 0.3139892499881698, 1.106306302620869;
+  transform_c.add(temp_Cam, temp_Rob, 1);
+
+  temp_Rob << -0.7186, -0.60865, 0.20215;
+  temp_Cam << 0.4586936836266911, -0.3711703017491502, 1.518325335151451;
+  transform_c.add(temp_Cam, temp_Rob, 1);
+
+  const Eigen::Matrix4f transformation = transform_c.getTransformation().matrix();
+  
+  Eigen::Vector4f temp_Robs1;
+  Eigen::Vector4f temp_Cams1;
+  temp_Robs1 << -0.21761, 0.13545, 0.24925, 1;
+  temp_Cams1 << -0.2682437310635091, -0.2736683456482534, 0.9606027429852959, 1;
+
+  Eigen::Vector4f temp_Robs2;
+  Eigen::Vector4f temp_Cams2;
+  temp_Robs2 << -0.51464, -0.22904, -0.7502, 1;
+  temp_Cams2 << 0.1478706777689268, 0.3139892499881698, 1.106306302620869, 1;
+
+  Eigen::Vector4f temp_Robs3;
+  Eigen::Vector4f temp_Cams3;
+  temp_Robs3 << -0.7186, -0.60865, 0.20215, 1;
+  temp_Cams3 << 0.4586936836266911, -0.3711703017491502, 1.518325335151451, 1;
+  //std::cout << temp_Robs << std::endl;
+  //Eigen::Vector4f wub = transformation * temp_Robs;
+  //std::cout << wub << std::endl;
+  //std::cout << temp_Cams << std::endl;
+  Eigen::Vector4f wub1 = transformation * temp_Cams1;
+  Eigen::Vector4f wub2 = transformation * temp_Cams2;
+  Eigen::Vector4f wub3 = transformation * temp_Cams3;
+  std::cout << wub1 - temp_Robs1 << std::endl;
+  std::cout << wub2 - temp_Robs2 << std::endl;
+  std::cout << wub3 - temp_Robs3 << std::endl;
   //any code would go here
 
 
