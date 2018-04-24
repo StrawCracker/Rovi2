@@ -49,13 +49,17 @@ public:
 	//any action coding done here
 	//rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
 	
-	rw::math::Q qstart(6,1.0,2.0,3.0,4.0,5.0,6.0);
-	rw::math::Q qgoal(6,0,0,0,0,0,0);
+	rw::math::Q qstart(6,goal->end[0],goal->end[1],goal->end[2],goal->end[3],goal->end[4],goal->end[5]);
+	rw::math::Q qgoal(6,goal->start[0],goal->start[1],goal->start[2],goal->start[3],goal->start[4],goal->start[5]);
 	
+	addQ(&qstart,nullptr);
+
+	rw::trajectory::Path<rw::math::Q> path;
 
 	double eps = 0.1;
 	while(true)
 	{
+		std::cout<<"Tree size: "<<tree.size()<<"\n";
 		//Sample random point
 		rw::math::Q randomPoint = Cellman.randomQ();
 
@@ -76,26 +80,65 @@ public:
 
 		addQ(&newPoint, neighbour);
 
-		//double 
-		//if()
+
+		//Check if it's done
+		double distToGoal = (qgoal-newPoint).norm2();
+		if(distToGoal<eps)
+		{
+			if(collisionInPath(newPoint,qgoal))
+				continue;
+			
+			//Add path to return it
+			path.push_back(qgoal);
+			path.push_back(newPoint);
+			
+
+			qTree* traceBackLeaf = neighbour;
+
+			while(traceBackLeaf->getParent()!=nullptr)
+			{
+				path.push_back(*(traceBackLeaf->data));
+
+				traceBackLeaf=traceBackLeaf->getParent();
+
+			}
+			path.push_back(*(traceBackLeaf->data));
+
+			path.push_back(qstart);
+			break;
+
+
+		}
 
 
 
 	}
 
+	//Length of between all points
 
-	addQ(&qstart,nullptr);
-	
-    
-
-
-    
-
+	std::cout<<"\
+	n\n\nCheck the length between points:\n";
+	for(int i =1;i< path.size();i++)
+		std::cout<<(path[i-1]-path[i]).norm2()<<"\n";
 
 	//convert result to QPath and send on RRTResult
-	//as_.setSucceeded(result_); will become succeeded and publish the result
+	result_.path = pathToDouble(path);
+	as_.setSucceeded(result_); //will become succeeded and publish the result
 
 
+	}
+
+	std::vector<double> pathToDouble(rw::trajectory::Path<rw::math::Q> path)
+	{
+	
+		std::vector<double> resPath;
+		for(int i =0; i< path.size();i++)
+		{
+			for(int j = 0; j<6;j++)
+			resPath.push_back(path[i](j));
+		}
+
+		return resPath;
 	}
 
 	qTree* nearestNeighbour(rw::math::Q point)
@@ -168,8 +211,8 @@ public:
             if(Cellman.inCollision())
             {
                 
-                std::cout << "collision detected at " << q_i << std::endl;
-                std::cout << "after " << i << " steps" << std::endl;
+                //std::cout << "collision detected at " << q_i << std::endl;
+                //std::cout << "after " << i << " steps" << std::endl;
                 return true;
             }
         }
