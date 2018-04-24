@@ -31,44 +31,66 @@ cloud_cb (const sensor_msgs::ImageConstPtr& left_image_msg, const sensor_msgs::I
   Eigen::Vector3f temp_Rob;
   Eigen::Vector3f temp_Cam;
 
-  temp_Rob << -0.21761, 0.13545, 0.24925;
-  temp_Cam << -0.2682437310635091, -0.2736683456482534, 0.9606027429852959;
+ // temp_Rob << -0.38570, -0.44196, 0.58128;
+ // temp_Cam << 0.3786852282018022, -0.05589587448303715, 1.086132868225872;
+ // transform_c.add(temp_Cam, temp_Rob, 1);
+
+  temp_Rob << -0.22627, -0.11403, 0.3330;
+  temp_Cam << -0.1024605874888508, 0.05339226685674515, 1.130754369431207;
   transform_c.add(temp_Cam, temp_Rob, 1);
 
-  temp_Rob << -0.51464, -0.22904, -0.7502;
-  temp_Cam << 0.1478706777689268, 0.3139892499881698, 1.106306302620869;
+  temp_Rob << 0.252, -0.36974, 0.42757;
+  temp_Cam << 0.08570536310699839, -0.2288544399945376, 1.321856583413587;
   transform_c.add(temp_Cam, temp_Rob, 1);
 
-  temp_Rob << -0.7186, -0.60865, 0.20215;
-  temp_Cam << 0.4586936836266911, -0.3711703017491502, 1.518325335151451;
+  temp_Rob << -0.3626, -0.22902, 0.18725;
+  temp_Cam << 0.02997637511324269, 0.2674841314496603, 1.196379645386563;
+  transform_c.add(temp_Cam, temp_Rob, 1);
+
+  temp_Rob << -0.5855, -0.5755, 0.68037;
+  temp_Cam << 0.07591882590844298, 0.04810576969453317, 0.5748828124999978;
   transform_c.add(temp_Cam, temp_Rob, 1);
 
   const Eigen::Matrix4f transformation = transform_c.getTransformation().matrix();
   
-  Eigen::Vector4f temp_Robs1;
-  Eigen::Vector4f temp_Cams1;
-  temp_Robs1 << -0.21761, 0.13545, 0.24925, 1;
-  temp_Cams1 << -0.2682437310635091, -0.2736683456482534, 0.9606027429852959, 1;
+//  Eigen::Vector4f temp_Robs1;
+//  Eigen::Vector4f temp_Cams1;
+//  temp_Robs1 << -0.38570, -0.44196, 0.58128, 1;
+//  temp_Cams1 << 0.3786852282018022, -0.05589587448303715, 1.086132868225872, 1;
 
   Eigen::Vector4f temp_Robs2;
   Eigen::Vector4f temp_Cams2;
-  temp_Robs2 << -0.51464, -0.22904, -0.7502, 1;
-  temp_Cams2 << 0.1478706777689268, 0.3139892499881698, 1.106306302620869, 1;
+  temp_Robs2 << -0.22627, -0.11403, 0.3330, 1;
+  temp_Cams2 << -0.1024605874888508, 0.05339226685674515, 1.130754369431207, 1;
 
-  Eigen::Vector4f temp_Robs3;
-  Eigen::Vector4f temp_Cams3;
-  temp_Robs3 << -0.7186, -0.60865, 0.20215, 1;
-  temp_Cams3 << 0.4586936836266911, -0.3711703017491502, 1.518325335151451, 1;
+//  Eigen::Vector4f temp_Robs3;
+//  Eigen::Vector4f temp_Cams3;
+//  temp_Robs3 << 0.252, -0.36974, 0.42757, 1;
+//  temp_Cams3 << 0.08570536310699839, -0.2288544399945376, 1.321856583413587, 1;
+
+  Eigen::Vector4f temp_Robs4;
+  Eigen::Vector4f temp_Cams4;
+  temp_Robs4 << -0.3626, -0.22902, 0.18725, 1;
+  temp_Cams4 << 0.02997637511324269, 0.2674841314496603, 1.196379645386563, 1;
+
+  Eigen::Vector4f temp_Robs5;
+  Eigen::Vector4f temp_Cams5;
+  temp_Robs5 << -0.5855, -0.5755, 0.68037, 1;
+  temp_Cams5 << 0.07591882590844298, 0.04810576969453317, 0.5748828124999978, 1;
   //std::cout << temp_Robs << std::endl;
   //Eigen::Vector4f wub = transformation * temp_Robs;
   //std::cout << wub << std::endl;
   //std::cout << temp_Cams << std::endl;
-  Eigen::Vector4f wub1 = transformation * temp_Cams1;
+//  Eigen::Vector4f wub1 = transformation * temp_Cams1;
   Eigen::Vector4f wub2 = transformation * temp_Cams2;
-  Eigen::Vector4f wub3 = transformation * temp_Cams3;
-  std::cout << wub1 - temp_Robs1 << std::endl;
+//  Eigen::Vector4f wub3 = transformation * temp_Cams3;
+  Eigen::Vector4f wub4 = transformation * temp_Cams4;
+  Eigen::Vector4f wub5 = transformation * temp_Cams5;
+ // std::cout << wub1 - temp_Robs1 << std::endl;
   std::cout << wub2 - temp_Robs2 << std::endl;
-  std::cout << wub3 - temp_Robs3 << std::endl;
+//  std::cout << wub3 - temp_Robs3 << std::endl;
+  std::cout << wub4 - temp_Robs4 << std::endl;
+  std::cout << wub5 - temp_Robs5 << std::endl;
   //any code would go here
 
 
