@@ -22,33 +22,69 @@ protected:
 
 public:
 
-  RRT_Planner(std::string name) :
-    //as_(nh_, name, boost::bind(&CollisionDetector::executeCB, this, _1), false),
-    as_(nh_, name, boost::bind(&RRT_Planner::executeCB, this, _1), false),
-    action_name_(name)
-  {
-    sub_ = nh_.subscribe("/cameranode/output",1,&RRT_Planner::cloud_cb, this);
-    as_.start();
-  }
+	RRT_Planner(std::string name) :
+	//as_(nh_, name, boost::bind(&CollisionDetector::executeCB, this, _1), false),
+	as_(nh_, name, boost::bind(&RRT_Planner::executeCB, this, _1), false),
+	action_name_(name)
+	{
+		sub_ = nh_.subscribe("/cameranode/output",1,&RRT_Planner::cloud_cb, this);
+		as_.start();
+	}
 
-  ~RRT_Planner(void)
-  {
-  }
-  
-  void cloud_cb(cameranode::Point point)
-  {
-    ballPoint_ = point;
-  }
-  
-  void executeCB(const rrt::RRTGoalConstPtr &goal)
-  {
-    //any action coding done here
-    //rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
+	~RRT_Planner(void)
+	{
+	}
+
+	void cloud_cb(cameranode::Point point)
+	{
+		ballPoint_ = point;
+	}
+
+	void executeCB(const rrt::RRTGoalConstPtr &goal)
+	{
+	//any action coding done here
+	//rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
+	
+	Q test1(4, 4., 4., 4., 4.);
     
+    rrt Tree(&test1);
+    Q test2(4, 5., 5., 5., 5.); 
+    Tree.getTree();
 
-    //convert result to QPath and send on RRTResult
-    //as_.setSucceeded(result_); will become succeeded and publish the result
-  }
+
+	//convert result to QPath and send on RRTResult
+	//as_.setSucceeded(result_); will become succeeded and publish the result
+
+
+	}
+
+	rrt :: rrt()
+	{
+
+	}
+
+	// Initial configuration to build RRT from
+	rrt :: rrt(Q * qInit_)
+	{
+		qTree qInit(qInit_);
+		this->rrtTree.push_back(&qInit);
+	}
+
+	void rrt :: addQ(Q * qNode_, qTree * qParent_)
+	{
+		qTree qNode(qNode_, qParent_);
+		this->rrtTree.push_back(&qNode);
+	}
+
+	vector<qTree*> rrt :: getTree()
+	{
+		for (int i = 0; i < this->rrtTree.size(); i++)
+		{
+		    std::cout << this->rrtTree[i] << '\n';
+		}
+		
+		return this->rrtTree;
+	}
 
 
 };
