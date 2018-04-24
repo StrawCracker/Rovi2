@@ -19,6 +19,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   cameranode
+  caros_common_msgs
+  caros_common_robwork
+  caros_control_msgs
+  caros_control
+  caros_common
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -138,7 +143,7 @@ target_link_libraries(
 
 add_dependencies(
   collision_server
-  ${collision_EXPORTED_TARGETS}
+  ${collision_server_EXPORTED_TARGETS}
   cameranode_generate_messages_cpp
 )
 #

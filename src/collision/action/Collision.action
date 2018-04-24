@@ -4,9 +4,7 @@ float64[] path
 
 ---
 #result definition
-int32[] sequence
 bool isGood
 ---
 #feedback
-int32[] sequence
 bool isGoodSoFar
