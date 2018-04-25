@@ -1,19 +1,30 @@
 #include <ros/ros.h>
+#include <queue>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 #include <collision/CollisionAction.h>
 #include <rrt/RRTAction.h>
 #include <rw/math/Q.hpp>
 #include <rw/trajectory.hpp>
+#include <caros_control_msgs/RobotState.h>
+#include <caros/serial_device_si_proxy.h>
+#include <caros_common_msgs/Q.h>
+#include <caros/common_robwork.h>
 
 #include <chrono>
 #include <ctime>
-
+#define SUBSCRIBER "/caros_universalrobot/caros_serial_device_service_interface/robot_state"
 
 std::chrono::steady_clock::time_point start;
 std::chrono::steady_clock::time_point end;
 
+std::queue<rw::math::Q> currentPath;
 
+
+ros::Subscriber _sub;
+caros::SerialDeviceSIProxy* _robot;
+
+rw::math::Q newGoal;
 
 rw::trajectory::Path<rw::math::Q> getPath(std::vector<double> vec)
 {
@@ -58,6 +69,35 @@ void addPathToColl(rw::trajectory::Path<rw::math::Q> path, collision::CollisionG
 
 }
 
+bool Qequals(rw::math::Q q1, rw::math::Q q2, double tolerance)
+{
+  if((q1-q2).norm2()<tolerance)
+    return true;
+  return false;
+}
+
+void stateCallback(const caros_control_msgs::RobotState & msg)
+{
+    
+    // Extract configuration from RobotState message
+    caros_common_msgs::Q conf = msg.q;
+    
+    // Convert from ROS msg to Robwork Q
+    rw::math::Q conf_rw = caros::toRw(conf);
+    if(Qequals(conf_rw,newGoal,0.001) && !currentPath.empty())
+    {
+
+    newGoal = currentPath.front();
+    currentPath.pop();
+    _robot->moveServoQ(newGoal,0.1);
+    }
+    
+    // Emit the configuration
+    //emit newState(conf_rw);
+
+}
+
+
 void doneCb_col(const actionlib::SimpleClientGoalState& state,
             const collision::CollisionResultConstPtr& result)
 {
@@ -78,13 +118,39 @@ void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
 {
 
   ROS_INFO("Finished in state [%s]", state.toString().c_str());
-  ROS_INFO("Answer: %i", result->path);
+  
+  rw::trajectory::Path<rw::math::Q> newPath = getPath(result->path);
+
+  for(size_t i =0; i< newPath.size();i++)
+    currentPath.push(newPath[i]);
+
+
+
+
   //ros::shutdown();
 }
+
+// void runCurrentPath()
+// {
+//   while(!currentPath.empty())
+//   {
+//     rw::math::Q newGoal = currentPath
+
+//   }
+
+// }
 
 int main (int argc, char **argv)
 {
   ros::init(argc, argv, "mainlogic");
+  std::cout<<"Ros INIT! \n";
+  //Subscripe to robot state
+  ros::NodeHandle _nh;
+  _sub = _nh.subscribe(SUBSCRIBER, 1, &stateCallback);
+  std::cout<<"Subscribe!\n";
+  _robot = new caros::SerialDeviceSIProxy(_nh, "caros_universalrobot");
+  std::cout<<"Get robot\n";
+
   rw::math::Q temp2(6, 1, 2, 3, 4, 5, 6);
   // create the action client
   // true causes the client to spin its own thread
@@ -107,36 +173,10 @@ int main (int argc, char **argv)
 
 
 
-  // test for collision
-
-  std::vector<double> testd;
-  //Home pos
-  testd.push_back(0);
-  testd.push_back(-1.57);
-  testd.push_back(0 );
-  testd.push_back(-1.57);
-  testd.push_back(0);
-  testd.push_back(0);
-
-  //Start pos from sim
-  testd.push_back(-1.6);
-  testd.push_back(-1.73);
-  testd.push_back(-2.2);
-  testd.push_back(-0.81);
-  testd.push_back(1.6);
-  testd.push_back(-0.03);
-
-  //"Fuck the computer" posistion aka forced collision
-  // testd.push_back(0.6);
-  // testd.push_back(-0.2);
-  // testd.push_back(0);
-  // testd.push_back(-1.57);
-  // testd.push_back(0);
-  // testd.push_back(0);
-
-  rw::trajectory::Path<rw::math::Q> pathTest = getPath(testd);
-  std::cout<<pathTest[0]<<"\n";
-  std::cout<<pathTest[1]<<"\n\n\n";
+  
+  // rw::trajectory::Path<rw::math::Q> pathTest = getPath(testd);
+  // std::cout<<pathTest[0]<<"\n";
+  // std::cout<<pathTest[1]<<"\n\n\n";
 
 
   //Works!!
@@ -147,48 +187,78 @@ int main (int argc, char **argv)
   //ac_col.sendGoal(goal_col, &doneCb_col);
 
 
-//Test rrt
-std::vector<double> testRRTStart;
-std::vector<double> testRRTEnd;
+  //Test rrt
+  std::vector<double> pointA;
+  std::vector<double> pointB;
   //Home pos
-  testRRTStart.push_back(0);
-  testRRTStart.push_back(-1.57);
-  testRRTStart.push_back(0 );
-  testRRTStart.push_back(-1.57);
-  testRRTStart.push_back(0);
-  testRRTStart.push_back(0);
+  pointA.push_back(0);
+  pointA.push_back(-1.57);
+  pointA.push_back(0 );
+  pointA.push_back(-1.57);
+  pointA.push_back(0);
+  pointA.push_back(0);
 
   //Start pos from sim
-  testRRTEnd.push_back(-1.6);
-  testRRTEnd.push_back(-1.73);
-  testRRTEnd.push_back(-2.2);
-  testRRTEnd.push_back(-0.81);
-  testRRTEnd.push_back(1.6);
-  testRRTEnd.push_back(-0.03);
+  pointB.push_back(-1.6);
+  pointB.push_back(-1.73);
+  pointB.push_back(-2.2);
+  pointB.push_back(-0.81);
+  pointB.push_back(1.6);
+  pointB.push_back(-0.03);
   
 
-  goal_rrt.start=testRRTStart;
-  goal_rrt.end=testRRTEnd;
+  //goal_rrt.start=pointA;
+  //goal_rrt.end=pointB;
 
+  bool aToB = true;
 
-  ac_rrt.sendGoal(goal_rrt);
-  //wait for the action to return
-  //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
-  bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(30.0));
-
-  if (finished_before_timeout)
+  std::cout<<"Starter while(true)!\n";
+  while(true)
   {
-    //actionlib::SimpleClientGoalState state = ac_col.getState();
-    //ROS_INFO("Action collision finished: %s",state.toString().c_str());
-    //ROS_INFO("I finished fast");
-    //actionlib::SimpleActionClient<collision::CollisionAction>::ResultConstPtr result = ac_col.getResult();
-    //ROS_INFO("Result from collision free is: %s", result);
-    actionlib::SimpleClientGoalState state = ac_rrt.getState();
-    ROS_INFO("Action rrt finished: %s",state.toString().c_str());
-  }
-  else
-    ROS_INFO("Action did not finish before the time out.");
+    ros::spinOnce();
+    if(!currentPath.empty())
+      continue;
 
+
+    if(aToB)
+    {
+      goal_rrt.start=pointA;
+      goal_rrt.end=pointB;
+    }
+    else
+    {
+      goal_rrt.start=pointB;
+      goal_rrt.end=pointA;
+    }
+
+
+
+
+
+
+    ac_rrt.sendGoal(goal_rrt, &doneCb_rrt);
+    //wait for the action to return
+    //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
+    bool finished_before_timeout = ac_rrt.waitForResult(ros::Duration(60.0));
+
+    if (finished_before_timeout)
+    {
+      //actionlib::SimpleClientGoalState state = ac_col.getState();
+      //ROS_INFO("Action collision finished: %s",state.toString().c_str());
+      //ROS_INFO("I finished fast");
+      //actionlib::SimpleActionClient<collision::CollisionAction>::ResultConstPtr result = ac_col.getResult();
+      //ROS_INFO("Result from collision free is: %s", result);
+      actionlib::SimpleClientGoalState state = ac_rrt.getState();
+      ROS_INFO("Action rrt finished: %s",state.toString().c_str());
+    }
+    else
+      ROS_INFO("Action did not finish before the time out.");
+
+    aToB= !aToB;
+
+    
+
+  }
   //exit
   return 0;
 }
