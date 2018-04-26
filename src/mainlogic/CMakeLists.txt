@@ -5,6 +5,7 @@ project(mainlogic)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  roslaunch
   actionlib
   actionlib_msgs
   sensor_msgs
@@ -20,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   cameranode
   collision
   rrt
+
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -194,7 +196,10 @@ add_dependencies(
 #############
 ## Testing ##
 #############
-
+if (CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(launch)
+endif()
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_beginner_tutorials.cpp)
 # if(TARGET ${PROJECT_NAME}-test)

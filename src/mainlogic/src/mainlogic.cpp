@@ -84,7 +84,7 @@ void stateCallback(const caros_control_msgs::RobotState & msg)
     
     // Convert from ROS msg to Robwork Q
     rw::math::Q conf_rw = caros::toRw(conf);
-    if(Qequals(conf_rw,newGoal,0.001) && !currentPath.empty())
+    if(Qequals(conf_rw,newGoal,0.2) && !currentPath.empty())
     {
 
     newGoal = currentPath.front();
@@ -120,7 +120,6 @@ void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
   ROS_INFO("Finished in state [%s]", state.toString().c_str());
   
   rw::trajectory::Path<rw::math::Q> newPath = getPath(result->path);
-
   for(size_t i =0; i< newPath.size();i++)
     currentPath.push(newPath[i]);
 
