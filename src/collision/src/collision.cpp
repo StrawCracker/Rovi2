@@ -66,14 +66,17 @@ public:
 
     bool collisionFree = true;
 
-    for(int i =1;i< path.size() && collisionFree ;i++)
-    //while(collisionFree && !path.empty())
+    if(path.size()>=2)
     {
-      std::cout<<"While! \n";
-      //auto qNew = path
-      collisionFree= !collisionInPath(path[i],path[i-1]);
+      for(int i =1;i< path.size() && collisionFree ;i++)
+      //while(collisionFree && !path.empty())
+      {
+        std::cout<<"While! \n";
+        //auto qNew = path
+        collisionFree= !collisionInPath(path[i],path[i-1]);
 
-      //qLast=qNew;
+        //qLast=qNew;
+      }
     }
 
     //Debug
