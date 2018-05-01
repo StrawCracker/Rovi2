@@ -62,6 +62,9 @@ public:
 	//convert start and goal
 	rw::math::Q qstart(6,goal->end[0],goal->end[1],goal->end[2],goal->end[3],goal->end[4],goal->end[5]);
 	rw::math::Q qgoal(6,goal->start[0],goal->start[1],goal->start[2],goal->start[3],goal->start[4],goal->start[5]);
+
+	std::cout<<"qstart: "<< qstart<<"\n";
+	std::cout<<"qgoal: "<< qgoal<<"\n";
 	
 	addQ(qstart,-1);
 
@@ -150,6 +153,9 @@ public:
 
 	//convert result to QPath and send on RRTResult
 	result_.path = pathToDouble(path);
+
+	path.clear();
+	tree.clear();
 	as_.setSucceeded(result_); //will become succeeded and publish the result
 
 

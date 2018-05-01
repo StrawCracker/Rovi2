@@ -1,0 +1,16 @@
+<launch>
+
+  <group>
+    <include file="$(find caros_universalrobot)/launch/caros_universalrobot.launch">
+    </include>
+
+
+    <node pkg="rrt" type="rrt_server" name="rrt_server_testing">
+    </node>
+    <node pkg="collision" type="collision_server" name="collision_server_testing">
+    </node>
+    <node pkg="mainlogic" type="mainlogic" name ="masternode_testing">
+    </node>
+
+  </group>
+</launch>
