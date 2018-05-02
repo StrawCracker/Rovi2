@@ -9,6 +9,9 @@
 #include <rw/trajectory.hpp>
 #include "/home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp"
 #include "qTree.h"
+#include <rwlibs/algorithms/kdtree/KDTreeQ.hpp>
+#include <chrono>
+#include <ctime>
 
 class RRT_Planner
 {
@@ -24,6 +27,9 @@ protected:
   cameranode::Point ballPoint_;// = new cameranode::Point;
   CellManager Cellman;
   vector<qTree> tree;
+  rwlibs::algorithms::KDTreeQ<int> *kdTree;
+  
+
 
 public:
 
@@ -55,7 +61,7 @@ public:
 	{
 	//any action coding done here
 	//rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
-
+	 kdTree= new rwlibs::algorithms::KDTreeQ<int>(6);
 	//Place ball;
 	Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
 
@@ -68,26 +74,41 @@ public:
 	
 	addQ(qstart,-1);
 
+	std::cout<<"Start på tree\n";
+
 	rw::trajectory::Path<rw::math::Q> path;
 
-	double eps = 0.1;
-	double closeToGoal=100;
-	while(true)
+	
+
+    typedef std::chrono::duration<float,std::milli> millisecs_t ;
+    
+
+	float eps = 0.1;
+	float closeToGoal=100;
+	int size2=0;
+	
+	while(size2<10000)
 	{
-		std::cout<<"\n\nTree size: "<<tree.size()<<"\n";
+			//std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() ;
+		size2=tree.size();
+		if(size2%1000==0)
+			std::cout<<"Tree size: "<<size2<<"\n";
 		//Sample random point
 		rw::math::Q randomPoint = Cellman.randomQ();
 
-		if((rand() % 100)<=20)
-			randomPoint = qgoal;
+		if((rand() % 1000)<=1)
+		 	randomPoint = qgoal;
 
-
+			// millisecs_t duration( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+			// std::cout <<"SampleQ: " << duration.count() << " milliseconds.\n" ;
 		//std::cout<<"Starting nearestNeighbour\n";
 		//Find nearest neighbour
 		int neighbour = nearestNeighbour(randomPoint);
-		//std::cout<<"Ending nearestNeighbour\n\n";
+		//std::cout <<"NN index: "<<neighbour<<"\n";
 		rw::math::Q qneighbour = (tree[neighbour].data);
-
+		//std::cout<<"Ending nearestNeighbour\n\n";
+			// duration= millisecs_t( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+			// std::cout <<"Nearest neighbour: " << duration.count() << " milliseconds.\n" ;
 
 		//Normalize
 		rw::math::Q neighToRand= randomPoint-qneighbour;
@@ -95,27 +116,39 @@ public:
 		
 
 		rw::math::Q newPoint = qneighbour+ neighToRand;
+
+			// duration= millisecs_t( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+			// std::cout <<"Normalize: " << duration.count() << " milliseconds.\n" ;
 		//std::cout<<"Checking collision\n";
 		//Check for collision
 		if(collisionInPath(newPoint,qneighbour))
 			continue;
 
+			//duration= millisecs_t( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+			//std::cout <<"Collision: " << duration.count() << " milliseconds.\n" ;
+		//std::cout<< newPoint<<"\n";
 		addQ(newPoint, neighbour);
 		//addQ(&newPoint, nullptr);
-
+			//duration= millisecs_t( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+			//std::cout <<"AddQ: " << duration.count() << " milliseconds.\n" ;
 		//Check if it's done
 		double distToGoal = (qgoal-newPoint).norm2();
 		if(distToGoal<closeToGoal)
 		{
 			closeToGoal=distToGoal;
-			//std::cout<<"Dist mini: "<< closeToGoal<<"\n";
+			std::cout<<"Dist mini: "<< closeToGoal<<" TreeSize: "<< tree.size()<<"\n";
 		}
 		//std::cout<<"DistToGoal: "<< distToGoal<<"\n";
-		if(distToGoal<eps)
+		if(distToGoal<eps*3)
 		{
-
+			std::cout<<"Maybe goal??\n";
 			if(collisionInPath(newPoint,qgoal))
+			{
+				std::cout<<"Close to goal but a collision :(\n";
 				continue;
+			}
+
+
 			std::cout<<"GOAL#################################\n";
 			
 			//Add path to return it
@@ -146,16 +179,18 @@ public:
 
 	//Length of between all points
 
-	std::cout<<"\
-	n\n\nCheck the length between points:\n";
-	for(int i =1;i< path.size();i++)
-		std::cout<<(path[i-1]-path[i]).norm2()<<"\n";
+	// std::cout<<"\n\n\nCheck the length between points:\n";
+	// for(int i =1;i< path.size();i++)
+	// 	std::cout<<(path[i-1]-path[i]).norm2()<<"\n";
 
+	std::cout<<"END!\n";
 	//convert result to QPath and send on RRTResult
 	result_.path = pathToDouble(path);
 
 	path.clear();
 	tree.clear();
+
+	
 	as_.setSucceeded(result_); //will become succeeded and publish the result
 
 
@@ -176,23 +211,25 @@ public:
 
 	int nearestNeighbour(rw::math::Q point)
 	{
-		int closest =-1; 
-		double smallestDist=1000;
-		for(int i =0; i<tree.size();i++)
-		{
+		// int closest =-1; 
+		// double smallestDist=1000;
+		// for(size_t i =0; i<tree.size();i++)
+		// {
 			
-			double dist=((tree[i].data)-point).norm2();
+		// 	double dist=((tree[i].data)-point).norm2();
 			
-			if(dist<smallestDist)
-			{
-				smallestDist = dist;
-				closest = i;
-			}
+		// 	if(dist<smallestDist)
+		// 	{
+		// 		smallestDist = dist;
+		// 		closest = i;
+		// 	}
 
-		}
+		// }
 		//std::cout<<"\tNearest index: "<<closest<<"\n";
 		//std::cout<<"\tsmallestDist: "<<smallestDist<<"\n";
-		return closest;
+		//return closest;
+
+		return kdTree->nnSearch(point).value;
 	}
 
 	
@@ -201,8 +238,10 @@ public:
 
 	void addQ(Q qNode_, int qParent_)
 	{
+		kdTree->addNode(qNode_,tree.size());
 		qTree qNode(qNode_, qParent_);
 		tree.push_back(qNode);
+		//std::cout<<"dasasd\n";
 	}
 
 	bool collisionInPath(rw::math::Q newPoint, rw::math::Q neighbor)
@@ -211,11 +250,13 @@ public:
 	Cellman._device->setQ(newPoint,Cellman._state);
 	if(Cellman.inCollision())
 		return true;
+	
+	return false;
 
 
 
     //extended binary
-    double eps =0.01;
+    double eps =0.1;
 
 
     rw::math::Q delta_Q = newPoint-neighbor;
@@ -223,12 +264,13 @@ public:
     int levels = ceil(log2(n_b)); //log2(n_b)
 
     
-    
+    //std::cout<<"n_b :"<<n_b<<"\n";
+	//std::cout<<"levels :"<<levels<<"\n";
 
-
-    int counter2 = 0;
+    //int counter2 = 0;
     for(int i = 1; i <= levels; i++)
     {
+
         double steps = pow(2, i-1);
         rw::math::Q step = (delta_Q/delta_Q.norm2())*((eps*pow(2,levels))/steps);
         for(int j = 1; j <= steps; j++)
@@ -242,7 +284,7 @@ public:
             Cellman._device->setQ(q_i,Cellman._state);
             //device->setQ(q_i, state);
             //CollisionDetector::QueryResult data;
-            counter2++;
+            //counter2++;
             //if(detector->inCollision(state,&data))
             if(Cellman.inCollision())
             {
@@ -269,10 +311,10 @@ public:
       {
           return true;
       }
-      else
-      {
-          return false;
-      }
+      
+      
+    return false;
+      
   }
 
 	// vector<qTree*> getTree()

@@ -131,7 +131,7 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
   ac_col->sendGoal(goal_col, &doneCb_col);
 
 
-  ROS_INFO("Finished Collision [%s]", state.toString().c_str());
+  //ROS_INFO("Finished Collision [%s]", state.toString().c_str());
   //ROS_INFO("Answer: %i", result->isGood);
   //ros::shutdown();
 }
@@ -233,18 +233,18 @@ int main (int argc, char **argv)
   pointA.push_back(0);
 
   //Start pos from sim
-  pointB.push_back(-1.6);
-  pointB.push_back(-1.73);
-  pointB.push_back(-2.2);
-  pointB.push_back(-0.81);
+  pointB.push_back(-1.601);
+  pointB.push_back(-2.037);
+  pointB.push_back(-2.203);
+  pointB.push_back(-0.436);
   pointB.push_back(1.6);
-  pointB.push_back(-0.03);
+  pointB.push_back(-0.031);
   
 
   //goal_rrt.start=pointA;
   //goal_rrt.end=pointB;
 
-  bool aToB = true;
+  bool aToB = false;
 
   std::cout<<"Starter while(true)!\n";
   while(true)
@@ -254,7 +254,7 @@ int main (int argc, char **argv)
     if(!currentPath.empty())
       continue;
 
-    if(Qequals(conf_rw,pointA,0.02) || Qequals(conf_rw,pointB,0.1))
+    if(Qequals(conf_rw,pointA,0.1) || Qequals(conf_rw,pointB,0.1))
       aToB = !aToB;
 
 
@@ -274,7 +274,7 @@ int main (int argc, char **argv)
     ac_rrt->sendGoal(goal_rrt, &doneCb_rrt);
     //wait for the action to return
     //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
-    bool finished_before_timeout = ac_rrt->waitForResult(ros::Duration(10.0));
+    bool finished_before_timeout = ac_rrt->waitForResult(ros::Duration(60.0));
 
     if (finished_before_timeout)
     {
@@ -287,7 +287,10 @@ int main (int argc, char **argv)
       ROS_INFO("Action rrt finished: %s",state.toString().c_str());
     }
     else
+    {
+      
       ROS_INFO("RRT did not finish before the time out.");
+    }
 
     
 

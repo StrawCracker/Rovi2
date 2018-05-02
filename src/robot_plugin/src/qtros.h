@@ -12,6 +12,7 @@
 #include <rw/math/Q.hpp>
 #include <caros_control_msgs/RobotState.h>
 #include <caros/serial_device_si_proxy.h>
+#include <cameranode/Point.h>
 //#include "class.cpp"
 
 
@@ -43,15 +44,18 @@ class QtROS : public QThread {
 
     /// Signal to emit for new configuration
     void newState(rw::math::Q);
+    void ballCallback(double x,double y,double z);
   private:
 
     /// Callback function
     void stateCallback(const caros_control_msgs::RobotState & msg);
+    void cloud_cb(cameranode::Point point);
 
     bool quitfromgui;
 
     ros::NodeHandle _nh;
     ros::Subscriber _sub;
+    ros::Subscriber _sub2;
     caros::SerialDeviceSIProxy* _robot;
 
 

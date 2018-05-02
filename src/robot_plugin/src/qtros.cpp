@@ -2,6 +2,7 @@
 #include <math.h>
 #include <caros_common_msgs/Q.h>
 #include <caros/common_robwork.h>
+#include <cameranode/Point.h>
 
 
 #define SUBSCRIBER "/caros_universalrobot/caros_serial_device_service_interface/robot_state"
@@ -14,6 +15,8 @@ QtROS::QtROS()
   // Subscribe to caros robot state
   _sub = _nh.subscribe(SUBSCRIBER, 1, &QtROS::stateCallback, this);
   _robot = new caros::SerialDeviceSIProxy(_nh, "caros_universalrobot");
+  
+  _sub2 = _nh.subscribe("/cameranode/output",1,&QtROS::cloud_cb, this);
   quitfromgui = false;
   
 }
@@ -21,6 +24,13 @@ QtROS::QtROS()
 void QtROS::quitNow()
 {
   quitfromgui = true;
+}
+
+void QtROS::cloud_cb(cameranode::Point point)
+{
+        std::cout<<"xyz "<<point.x<<point.y<<point.z<<"\n";;
+
+        emit ballCallback(point.x,point.y,point.z);
 }
 
 void QtROS::stateCallback(const caros_control_msgs::RobotState & msg)

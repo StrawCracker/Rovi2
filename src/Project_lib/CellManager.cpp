@@ -7,7 +7,8 @@
 
 
 #define deviceName "UR1"
-#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
+//#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
+#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene_hard.wc.xml"
 
 using namespace rw::common;
 using namespace rw::kinematics;

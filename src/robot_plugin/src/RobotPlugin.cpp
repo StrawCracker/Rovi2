@@ -5,6 +5,7 @@
 #include <qtimer.h>
 #include <QPushButton>
 #include <rw/loaders.hpp>
+#include <cameranode/Point.h>
 #include </home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp>
 
 
@@ -32,6 +33,8 @@ RobotPlugin::RobotPlugin():
         int argc = 0;
         ros::init(argc, argv,"robot_plugin");
 
+        
+
         _timer = new QTimer(this);
         connect(_timer, SIGNAL(timeout()), this, SLOT(timer()));
 
@@ -54,6 +57,7 @@ RobotPlugin::RobotPlugin():
         // Connect signal for quit
         connect(this, SIGNAL(quitNow()), _qtRos, SLOT(quitNow()));
 
+
         // Connect signal for moving robot home
         connect(this, SIGNAL(moveHome()), _qtRos, SLOT(moveHome()));
 
@@ -64,6 +68,9 @@ RobotPlugin::RobotPlugin():
         qRegisterMetaType<rw::math::Q>("rw::math::Q");
         connect(_qtRos, SIGNAL(newState(rw::math::Q)), this, SLOT(newState(rw::math::Q)));
                
+        connect(_qtRos, SIGNAL(ballCallback(double,double,double)), this, SLOT(HandleBallCallBack(double,double,double)));
+
+
 }
 
 RobotPlugin::~RobotPlugin()
@@ -80,13 +87,16 @@ void RobotPlugin::newState(rw::math::Q pos)
 }
 
 
+
+
 void RobotPlugin::initialize()
 {
         getRobWorkStudio()->stateChangedEvent().add(boost::bind(&RobotPlugin::stateChangedListener, this, _1), this);
         
         
-        rw::math::Q test2(2,2,2); 
-	std::cout <<"Length of test2: "<< test2.norm2()<<"\n";
+        
+        
+        
         
         //CellMan = CellManager();
         //CellMan.spawnBall();
@@ -200,6 +210,13 @@ void RobotPlugin::stateChangedListener(const State& state)
 	CellMan._state = state;
 }
 
+void RobotPlugin::HandleBallCallBack(double x,double y,double z)
+{
+        std::cout<<"xyz2 "<<x<<y<<z<<"\n";
+        CellMan.moveBall(x,y,z);
+        //updateScene();
+
+}
 
 
 

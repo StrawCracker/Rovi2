@@ -11,7 +11,7 @@ using namespace rw::math;
 class qTree
 {
     private:
-        int id;
+        
     public:
         int parent;
         Q data;

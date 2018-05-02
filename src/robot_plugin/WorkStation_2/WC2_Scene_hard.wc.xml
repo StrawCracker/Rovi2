@@ -26,7 +26,7 @@
   </Frame>
 
  <Frame name="Obstacle" refframe="Table">
-      <RPY> 0 0 0 </RPY> <Pos> 1.44 -0.5 1.00 </Pos>
+      <RPY> 0 0 0 </RPY> <Pos> 1.44 -0.5 1.10 </Pos>
      <Drawable name="Computer">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0</Pos>
    <Polytope file="Geometry/computer_noconv" />

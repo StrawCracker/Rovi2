@@ -7,6 +7,7 @@
 #include </home/resps/rovi2/Rovi2/src/Project_lib/CellManager.hpp>
 #include "qtros.h"
 #include <ros/ros.h>
+#include <cameranode/Point.h>
 #include <rws/RobWorkStudioPlugin.hpp>
 #include <rw/models.hpp>
 #include <rw/math/Q.hpp>
@@ -49,13 +50,15 @@ private slots:
 
 	void stateChangedListener(const rw::kinematics::State& state);
         void newState(rw::math::Q pos);
+	void HandleBallCallBack(double x,double y,double z);
 
 signals:
 	void quitNow();
         void moveHome();
+	
 
 private:
-
+	void cloud_cb(cameranode::Point point);
 	QTimer* _timer;
         QtROS *_qtRos;
 	
