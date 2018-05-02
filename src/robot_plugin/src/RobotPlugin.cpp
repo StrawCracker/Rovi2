@@ -213,7 +213,7 @@ void RobotPlugin::stateChangedListener(const State& state)
 void RobotPlugin::HandleBallCallBack(double x,double y,double z)
 {
         std::cout<<"xyz2 "<<x<<y<<z<<"\n";
-        CellMan.moveBall(x,y,z);
+        CellMan.moveBall(x,y,z); 
         //updateScene();
 
 }

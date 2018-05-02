@@ -160,7 +160,7 @@ bool CellManager::moveBall(double x, double y, double z)
         //if(_state == NULL)
         //        rw::common::Log::log().info() << "State not found\n";
         //return false;
-        mBallFrame->setTransform(transform, _state);
+        mBallFrame->moveTo(transform,_device->getBase(), _state);
 
         //getRobWorkStudio()->setState(_state);
         return true;
