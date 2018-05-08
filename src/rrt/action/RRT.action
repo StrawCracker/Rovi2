@@ -2,6 +2,7 @@
 int32 order
 float64[] start
 float64[] end
+float64 greed
 ---
 #result definition
 float64[] path

@@ -11,8 +11,10 @@
 #include <caros_common_msgs/Q.h>
 #include <caros/common_robwork.h>
 
+
 #include <chrono>
 #include <ctime>
+#include <cmath>
 #define SUBSCRIBER "/caros_universalrobot/caros_serial_device_service_interface/robot_state"
 
 std::chrono::steady_clock::time_point start;
@@ -29,6 +31,8 @@ ros::Subscriber _sub;
 caros::SerialDeviceSIProxy* _robot;
 
 rw::math::Q newGoal;
+double greed =-1.0;
+bool RRTReady =true;
 
 rw::trajectory::Path<rw::math::Q> getPath(std::vector<double> vec)
 {
@@ -110,7 +114,14 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
   //std::cout << duration.count() << " milliseconds.\n" ;
 
   if(!result->isGood)
+  {
     currentPath.clear();
+
+    greed=-1.0;
+
+    std::cout<<"Collision!! greed: -1.0\n";
+  
+  }
 
 
   
@@ -139,14 +150,66 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
 void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
             const rrt::RRTResultConstPtr& result)
 {
-
-  ROS_INFO("Finished in state [%s]", state.toString().c_str());
+  RRTReady=true;
+  //ROS_INFO("Finished in state [%s]", state.toString().c_str());
   
   rw::trajectory::Path<rw::math::Q> newPath = getPath(result->path);
-  for(size_t i =0; i< newPath.size();i++)
-    currentPath.push_back(newPath[i]);
+  if(newPath.size()==0)
+    return;
+  //Measure size
+  double tempGreed=0;
+  for(size_t i=1; i<newPath.size();i++)
+    tempGreed+= (newPath[i-1]-newPath[i]).normInf();
 
 
+ 
+  tempGreed *= 1.5;
+
+  if(tempGreed<greed ||greed<=0)
+  {
+
+    //Merge new path with current path..
+    int tempSize =currentPath.size();
+
+    double minDist = 100;
+    int newPathIndex = 0;
+
+    for(size_t i=0; i<newPath.size();i++)
+    {
+      double dist =(newPath[i]-conf_rw).norm2();
+
+      if(dist<minDist)
+      {
+        minDist=dist;
+        newPathIndex = i;
+
+      }
+      
+    }
+    std::cout<<"Current dist: "<<(newPath[0]-conf_rw).norm2()<<"\n";
+
+    std::cout<<"Improved dist: "<<(newPath[newPathIndex]-conf_rw).norm2()<<"\n";    
+
+    currentPath.clear();
+    for(size_t i =newPathIndex; i< newPath.size();i++)
+      currentPath.push_back(newPath[i]);
+
+
+
+
+
+    //for(int i = 0;i< tempSize;i++)
+    //  currentPath.pop_front();
+
+    if(currentPath.empty())
+      //If nothing got added to the path
+      greed = -1.0;
+    else
+      greed= tempGreed;  
+    std::cout << "New greed: " << greed<<"\n";
+
+    //Check where to splice the old path and new path.
+  }
 
 
   //ros::shutdown();
@@ -240,7 +303,7 @@ int main (int argc, char **argv)
   pointB.push_back(1.6);
   pointB.push_back(-0.031);
   
-
+ //qgoal: Q[6]{-0.0686, -1.5387, -0.0946, -1.4633, 0.0630045, 1.77636e-15}
   //goal_rrt.start=pointA;
   //goal_rrt.end=pointB;
 
@@ -251,14 +314,41 @@ int main (int argc, char **argv)
   {
     //std::cout<<"while(true)\n";
     ros::spinOnce();
-    if(!currentPath.empty())
+    if(!RRTReady)
       continue;
 
-    if(Qequals(conf_rw,pointA,0.1) || Qequals(conf_rw,pointB,0.1))
-      aToB = !aToB;
+    
 
+    //goal reached!
+    if(Qequals(conf_rw,pointA,0.1) && aToB==false)
+    {
+      std::cout<<"Reached point A!\n";
+      aToB = true;
+      greed = -1.0;
+    }
 
-    goal_rrt.start=std::vector<double> {conf_rw[0],conf_rw[1],conf_rw[2],conf_rw[3],conf_rw[4],conf_rw[5]};
+    if(Qequals(conf_rw,pointB,0.1) && aToB == true)
+    {
+      std::cout<<"Reached point B!\n";
+      aToB = false;
+      greed = -1.0;
+    }
+    //std::cout<<"Er det her?\n";
+    if(currentPath.size()<10 && greed!= -1.0)
+      continue;
+
+    int jumpAhead=5;
+    if(currentPath.size()>jumpAhead)
+    {
+      goal_rrt.start=std::vector<double> {currentPath[jumpAhead][0],currentPath[jumpAhead][1],currentPath[jumpAhead][2],currentPath[jumpAhead][3],currentPath[jumpAhead][4],currentPath[jumpAhead][5]};
+      
+    }
+    else
+    {
+      goal_rrt.start=std::vector<double> {conf_rw[0],conf_rw[1],conf_rw[2],conf_rw[3],conf_rw[4],conf_rw[5]};
+      
+      greed=-1;
+    }
 
     if(aToB)
       goal_rrt.end=pointB;
@@ -270,27 +360,32 @@ int main (int argc, char **argv)
 
 
 
-    std::cout<<"Start RRT\n";
-    ac_rrt->sendGoal(goal_rrt, &doneCb_rrt);
+    std::cout<<"Start RRT greed: "<<greed<<"\n";
+    goal_rrt.greed = greed;
+    
+    
+      ac_rrt->sendGoal(goal_rrt, &doneCb_rrt);
+      RRTReady=false;
+    
     //wait for the action to return
     //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));
-    bool finished_before_timeout = ac_rrt->waitForResult(ros::Duration(60.0));
+    // bool finished_before_timeout = ac_rrt->waitForResult(ros::Duration(60.0));
 
-    if (finished_before_timeout)
-    {
-      //actionlib::SimpleClientGoalState state = ac_col.getState();
-      //ROS_INFO("Action collision finished: %s",state.toString().c_str());
-      //ROS_INFO("I finished fast");
-      //actionlib::SimpleActionClient<collision::CollisionAction>::ResultConstPtr result = ac_col.getResult();
-      //ROS_INFO("Result from collision free is: %s", result);
-      actionlib::SimpleClientGoalState state = ac_rrt->getState();
-      ROS_INFO("Action rrt finished: %s",state.toString().c_str());
-    }
-    else
-    {
+    // if (finished_before_timeout)
+    // {
+    //   //actionlib::SimpleClientGoalState state = ac_col.getState();
+    //   //ROS_INFO("Action collision finished: %s",state.toString().c_str());
+    //   //ROS_INFO("I finished fast");
+    //   //actionlib::SimpleActionClient<collision::CollisionAction>::ResultConstPtr result = ac_col.getResult();
+    //   //ROS_INFO("Result from collision free is: %s", result);
+    //   actionlib::SimpleClientGoalState state = ac_rrt->getState();
+    //   //ROS_INFO("Action rrt finished: %s",state.toString().c_str());
+    // }
+    // else
+    // {
       
-      ROS_INFO("RRT did not finish before the time out.");
-    }
+    //   ROS_INFO("RRT did not finish before the time out.");
+    // }
 
     
 

@@ -7,8 +7,8 @@
 
 
 #define deviceName "UR1"
-//#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
-#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene_hard.wc.xml"
+#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene.wc.xml"
+//#define workcellPath "/home/resps/rovi2/Rovi2/src/robot_plugin/WorkStation_2/WC2_Scene_hard.wc.xml"
 
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -156,7 +156,8 @@ bool CellManager::spawnBall()
 bool CellManager::moveBall(double x, double y, double z)
 {
         rw::math::Transform3D<double> transform;
-        transform.P()= rw::math::Vector3D<double> (x,y,z);
+        //transform.P()= rw::math::Vector3D<double> (x,y,z);
+        transform.P()= rw::math::Vector3D<double> (0.0,-0.343,0.513);
         //if(_state == NULL)
         //        rw::common::Log::log().info() << "State not found\n";
         //return false;

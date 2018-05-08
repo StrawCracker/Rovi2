@@ -164,6 +164,7 @@ void RobotPlugin::btnPressed()
         {
                 
                 log().info() << "Moving home\n";
+                CellMan.moveBall(-1,-1,-1);
                 emit moveHome();
         }
         else if(obj == btn_getQ)

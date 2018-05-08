@@ -82,14 +82,22 @@ public:
 
     typedef std::chrono::duration<float,std::milli> millisecs_t ;
     
-
+	double greed = goal->greed;
 	float eps = 0.1;
 	float closeToGoal=100;
 	int size2=0;
 	
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() ;
 	while(size2<10000)
 	{
-			//std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() ;
+
+		millisecs_t duration( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+		if(duration.count()>10000)
+		{
+			std::cout<<"Time out!!\n";
+			break;
+
+		}
 		size2=tree.size();
 		if(size2%1000==0)
 			std::cout<<"Tree size: "<<size2<<"\n";
@@ -98,6 +106,16 @@ public:
 
 		if((rand() % 1000)<=1)
 		 	randomPoint = qgoal;
+
+
+		//Greed!!
+		if( greed >0 &&(qstart-randomPoint).normInf() + (qgoal-randomPoint).normInf() > greed)
+		{
+			std::cout<<"Outside greed: "<<greed<<" > "<<(qstart-randomPoint).normInf() + (qgoal-randomPoint).normInf()<<"\n";
+			continue;
+		}
+
+
 
 			// millisecs_t duration( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
 			// std::cout <<"SampleQ: " << duration.count() << " milliseconds.\n" ;
