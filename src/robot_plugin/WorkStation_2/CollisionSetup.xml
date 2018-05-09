@@ -4,6 +4,7 @@
     <FramePair first="Table" second="UR1.Joint1"/>  
     <FramePair first="Computer" second="Table"/>
     <FramePair first="Computer" second="Ball"/>  
-    <FramePair first="Ball" second="Table"/>     	      
+    <FramePair first="Ball" second="Table"/>  
+    <FramePair first="Obstacle" second="Ball" />   	      
     </Exclude>
 </CollisionSetup>

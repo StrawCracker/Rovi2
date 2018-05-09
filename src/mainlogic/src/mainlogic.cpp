@@ -15,8 +15,8 @@
 #include <ctime>
 #define SUBSCRIBER "/caros_universalrobot/caros_serial_device_service_interface/robot_state"
 
-std::chrono::steady_clock::time_point start;
-std::chrono::steady_clock::time_point end;
+std::chrono::high_resolution_clock::time_point start;
+std::chrono::high_resolution_clock::time_point end;
 
 
 rw::math::Q conf_rw;
@@ -29,6 +29,8 @@ ros::Subscriber _sub;
 caros::SerialDeviceSIProxy* _robot;
 
 rw::math::Q newGoal;
+
+rrt::RRTGoal goal_rrt;
 
 rw::trajectory::Path<rw::math::Q> getPath(std::vector<double> vec)
 {
@@ -110,8 +112,15 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
   //std::cout << duration.count() << " milliseconds.\n" ;
 
   if(!result->isGood)
+  {
     currentPath.clear();
-
+    std::cout << "OI! THE PATH HAS BEEN FUCKED UP!" << std::endl;
+    goal_rrt.ballInPath = true;
+  }
+  else
+  {
+    //goal_rrt.ballInPath = false;
+  }
 
   
 
@@ -121,6 +130,8 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
   collision::CollisionGoal goal_col;
   goal_col.order = 20;
   //goal
+  //decide here if we want to manually set a ball in the path of the robot
+  goal_col.ballInPath = true;
 
   rw::trajectory::Path<rw::math::Q>collisionPath;
   //Add the current path to collision
@@ -139,6 +150,9 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
 void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
             const rrt::RRTResultConstPtr& result)
 {
+  end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+  std::cout << "LOOKAHERE BITCH " << time_span.count() << std::endl;
 
   ROS_INFO("Finished in state [%s]", state.toString().c_str());
   
@@ -147,9 +161,12 @@ void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
     currentPath.push_back(newPath[i]);
 
 
-
-
+  std::cout << "Size of path: " << currentPath.size() << std::endl;
+  double tempGreed=0;
+  for(size_t i=1; i<currentPath.size();i++)
+    tempGreed+= (currentPath[i-1]-currentPath[i]).normInf();
   //ros::shutdown();
+  std::cout << "Path length: " << tempGreed << std::endl;
 }
 
 // void runCurrentPath()
@@ -189,7 +206,7 @@ int main (int argc, char **argv)
   ROS_INFO("Action servers started, sending goal.");
   // send a goal to the action
   
-  rrt::RRTGoal goal_rrt;
+  //rrt::RRTGoal goal_rrt;
   
 
   goal_rrt.order = 20;
@@ -197,6 +214,8 @@ int main (int argc, char **argv)
   //Start next collision test
   collision::CollisionGoal goal_col;
   goal_col.order = 20;
+  goal_col.ballInPath = true;
+  ////goal_col.ballInPath = false;
   //goal
 
   // rw::trajectory::Path<rw::math::Q>collisionPath;
@@ -247,15 +266,39 @@ int main (int argc, char **argv)
   bool aToB = false;
 
   std::cout<<"Starter while(true)!\n";
+  goal_rrt.ballInPath = false;
   while(true)
   {
     //std::cout<<"while(true)\n";
     ros::spinOnce();
     if(!currentPath.empty())
+    {
       continue;
+    }
 
-    if(Qequals(conf_rw,pointA,0.1) || Qequals(conf_rw,pointB,0.1))
-      aToB = !aToB;
+   // if(Qequals(conf_rw,pointA,0.2) || Qequals(conf_rw,pointB,0.2))
+   // {
+     // goal_rrt.ballInPath = false;
+   //   aToB = !aToB;
+   // }
+
+    //goal reached!
+    if(Qequals(conf_rw,pointA,0.1) && aToB==false)
+    {
+      std::cout<<"Reached point A!\n";
+      aToB = true;
+      goal_rrt.ballInPath = false;
+    //  greed = -1.0;
+    }
+
+    if(Qequals(conf_rw,pointB,0.1) && aToB == true)
+    {
+      std::cout<<"Reached point B!\n";
+      aToB = false;
+      goal_rrt.ballInPath = false;
+    //  greed = -1.0;
+    }
+
 
 
     goal_rrt.start=std::vector<double> {conf_rw[0],conf_rw[1],conf_rw[2],conf_rw[3],conf_rw[4],conf_rw[5]};
@@ -267,10 +310,20 @@ int main (int argc, char **argv)
     
 
 
-
+    //set wether or not we want to manually set a ball in the path of the robot
+    //goal_rrt.ballInPath = false;
 
 
     std::cout<<"Start RRT\n";
+    start = std::chrono::high_resolution_clock::now();
+    std::cout <<"Does rrt know of the ball? ";
+    if(goal_rrt.ballInPath)
+    {
+      std::cout << "YES" << std::endl;
+    }
+    else{
+      std::cout << "NO!" << std::endl;
+    }
     ac_rrt->sendGoal(goal_rrt, &doneCb_rrt);
     //wait for the action to return
     //bool finished_before_timeout = ac_col.waitForResult(ros::Duration(30.0));

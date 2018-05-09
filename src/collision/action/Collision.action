@@ -1,6 +1,7 @@
 #goal definition
 int32 order
 float64[] path
+bool ballInPath
 
 ---
 #result definition

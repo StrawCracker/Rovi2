@@ -55,8 +55,15 @@ public:
     //convert CollisionGoal from vector to QPath
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() ;
     rw::trajectory::Path<rw::math::Q> path = getPath(goal->path);
-    
-    Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+    if(goal->ballInPath)
+    {
+      Cellman.moveBall(0.0,-0.343,0.513);
+    }
+    else
+    {
+      //Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+      Cellman.moveBall(-1,-1,-1);
+    }
 
     std::cout<<"Placed ball at "<< ballPoint_<<std::endl;
 

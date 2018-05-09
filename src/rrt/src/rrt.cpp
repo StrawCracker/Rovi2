@@ -63,8 +63,15 @@ public:
 	//rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
 	 kdTree= new rwlibs::algorithms::KDTreeQ<int>(6);
 	//Place ball;
-	Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
-
+	if(goal->ballInPath)
+	{
+		Cellman.moveBall(0.0,-0.343,0.513);
+	}
+	else
+	{
+		//Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+		Cellman.moveBall(-1,-1,-1);
+	}
 	//convert start and goal
 	rw::math::Q qstart(6,goal->end[0],goal->end[1],goal->end[2],goal->end[3],goal->end[4],goal->end[5]);
 	rw::math::Q qgoal(6,goal->start[0],goal->start[1],goal->start[2],goal->start[3],goal->start[4],goal->start[5]);
@@ -190,7 +197,6 @@ public:
 	path.clear();
 	tree.clear();
 
-	
 	as_.setSucceeded(result_); //will become succeeded and publish the result
 
 
@@ -251,12 +257,12 @@ public:
 	if(Cellman.inCollision())
 		return true;
 	
-	return false;
+	//return false;
 
 
 
     //extended binary
-    double eps =0.1;
+    double eps =0.05;
 
 
     rw::math::Q delta_Q = newPoint-neighbor;

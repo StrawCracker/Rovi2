@@ -2,6 +2,7 @@
 int32 order
 float64[] start
 float64[] end
+bool ballInPath
 ---
 #result definition
 float64[] path
