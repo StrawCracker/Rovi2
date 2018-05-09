@@ -63,8 +63,20 @@ public:
 	//rw::math::Q testQ(6,1.0,2.0,3.0,4.0,5.0,6.0);
 	 kdTree= new rwlibs::algorithms::KDTreeQ<int>(6);
 	//Place ball;
+	////if(goal->ballInPath)
+	////{
+		////Cellman.moveBall(0.175,-0.343,0.513);
+		//Cellman.moveBall(-1,-1,-1);
+		////std::cout<<"Placed ball at 0.175, -0.343, 0.513" <<std::endl;
+	////}
+	////else
+	////{
+		//Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+	////	Cellman.moveBall(-1,-1,-1);
+	////	std::cout<<"Placed ball at -1, -1, -1" <<std::endl;
+	////}
 	Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
-
+	std::cout<<"Placed ball at " << ballPoint_.x << ", " << ballPoint_.y << ", " << ballPoint_.z <<std::endl;
 	//convert start and goal
 	rw::math::Q qstart(6,goal->end[0],goal->end[1],goal->end[2],goal->end[3],goal->end[4],goal->end[5]);
 	rw::math::Q qgoal(6,goal->start[0],goal->start[1],goal->start[2],goal->start[3],goal->start[4],goal->start[5]);
@@ -154,7 +166,7 @@ public:
 		if(distToGoal<closeToGoal)
 		{
 			closeToGoal=distToGoal;
-			std::cout<<"Dist mini: "<< closeToGoal<<" TreeSize: "<< tree.size()<<"\n";
+			////std::cout<<"Dist mini: "<< closeToGoal<<" TreeSize: "<< tree.size()<<"\n";
 		}
 		//std::cout<<"DistToGoal: "<< distToGoal<<"\n";
 		if(distToGoal<eps*3)
@@ -200,7 +212,7 @@ public:
 	// std::cout<<"\n\n\nCheck the length between points:\n";
 	// for(int i =1;i< path.size();i++)
 	// 	std::cout<<(path[i-1]-path[i]).norm2()<<"\n";
-
+	std::cout << path.size();
 	std::cout<<"END!\n";
 	//convert result to QPath and send on RRTResult
 	result_.path = pathToDouble(path);

@@ -56,9 +56,21 @@ public:
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now() ;
     rw::trajectory::Path<rw::math::Q> path = getPath(goal->path);
     
-    Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
-
-    std::cout<<"Placed ball at "<< ballPoint_<<std::endl;
+    ////if(goal->ballInPath)
+    ////{
+    ////  Cellman.moveBall(0.175,-0.343,0.513);
+      //Cellman.moveBall(-1,-1,-1);
+    ////  std::cout<<"Placed ball at 0.175, -0.343, 0.513" <<std::endl;
+    ////}
+    ////else
+    ////{
+    ////  Cellman.moveBall(-1,-1,-1);
+    ////  std::cout<<"Placed ball at -1,-1,-1" <<std::endl;
+      //Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+    ////}
+  	Cellman.moveBall(ballPoint_.x,ballPoint_.y,ballPoint_.z);
+	  std::cout<<"Placed ball at " << ballPoint_.x << ", " << ballPoint_.y << ", " << ballPoint_.z <<std::endl;
+    //std::cout<<"Placed ball at "<< ballPoint_<<std::endl;
 
     rw::math::Q qLast;// = path.back();
     //path.pop_back();
@@ -71,7 +83,7 @@ public:
       for(int i =1;i< path.size() && collisionFree ;i++)
       //while(collisionFree && !path.empty())
       {
-        std::cout<<"While! \n";
+       // std::cout<<"While! \n";
         //auto qNew = path
         collisionFree= !collisionInPath(path[i],path[i-1]);
 
@@ -127,9 +139,9 @@ public:
     int levels = ceil(log2(n_b)); //log2(n_b)
 
     //Debug
-    std::cout << "    "<<q1<<std::endl;
-    std::cout << "    "<<q2<<std::endl;
-    std::cout << "    Number of checks: " << n_b << std::endl;
+    // std::cout << "    "<<q1<<std::endl;
+    // std::cout << "    "<<q2<<std::endl;
+    // std::cout << "    Number of checks: " << n_b << std::endl;
     
 
 

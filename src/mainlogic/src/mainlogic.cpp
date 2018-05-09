@@ -19,7 +19,12 @@
 
 std::chrono::steady_clock::time_point start;
 std::chrono::steady_clock::time_point end;
+typedef std::chrono::duration<float,std::milli> millisecs_t ;
 
+bool hasPrinted = false;
+bool Ball = false;
+
+double afstand = 0;
 
 rw::math::Q conf_rw;
 std::deque<rw::math::Q> currentPath;
@@ -29,6 +34,9 @@ actionlib::SimpleActionClient<rrt::RRTAction> *ac_rrt;
 
 ros::Subscriber _sub;
 caros::SerialDeviceSIProxy* _robot;
+
+rrt::RRTGoal goal_rrt;
+collision::CollisionGoal goal_col;
 
 rw::math::Q newGoal;
 double greed =-1.0;
@@ -82,19 +90,50 @@ bool Qequals(rw::math::Q q1, rw::math::Q q2, double tolerance)
 
 void stateCallback(const caros_control_msgs::RobotState & msg)
 {
-    
     // Extract configuration from RobotState message
     caros_common_msgs::Q conf = msg.q;
     
     // Convert from ROS msg to Robwork Q
     conf_rw = caros::toRw(conf);
+
+
+    millisecs_t duration2( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+		if(duration2.count()<10000)
+		{
+      //std::cout << "counting " << duration2.count() << std::endl;
+			return;
+
+		}
+
+    //print currentPath
+    if(!hasPrinted)
+    {
+      double dist = 0;
+      for(int i = 1; i < currentPath.size(); i++)
+      {
+       dist += (currentPath[i-1]-currentPath[i]).norm2();
+      }
+      std::cout << "optimal path length: " << dist << std::endl;
+      hasPrinted = true;
+      newGoal = conf_rw;
+      //goal_rrt.ballInPath = true;
+      //goal_col.ballInPath = true;
+      Ball = true;
+      std::cout << "ballInPath set" << std::endl;
+    }
+   
     if(Qequals(conf_rw,newGoal,0.2) && !currentPath.empty())
     {
+      rw::math::Q temp = newGoal;
+      newGoal = currentPath.front();
 
-    newGoal = currentPath.front();
-    if(currentPath.size()>1 || Qequals(conf_rw,newGoal,0.01))
-      currentPath.pop_front();
-    _robot->moveServoQ(newGoal,0.1);
+      afstand += (temp - newGoal).norm2();
+
+      if(currentPath.size()>1 || Qequals(conf_rw,newGoal,0.01))
+      {
+       currentPath.pop_front();
+      }
+      _robot->moveServoQ(newGoal,0.1);
     }
     
     // Emit the configuration
@@ -118,19 +157,31 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
     currentPath.clear();
 
     greed=-1.0;
-
     std::cout<<"Collision!! greed: -1.0\n";
-  
+    //std::cout << "does collision know of the ball?: " ;
+    // if(goal_col.ballInPath)
+    // {
+    //   std::cout << "YES!" << std::endl;
+    // }
+    // else
+    // {
+    //   std::cout << "NO!" << std::endl;
+    // }
+    // std::cout << "does Ball know of the ball?: " ;
+    // if(Ball)
+    // {
+    //   std::cout << "YES!" << std::endl;
+    // }
+    // else
+    // {
+    //   std::cout << "NO!" << std::endl;
+    // }
   }
 
-
-  
-
-
-
   //Start next collision test
-  collision::CollisionGoal goal_col;
+  
   goal_col.order = 20;
+  goal_col.ballInPath = Ball;
   //goal
 
   rw::trajectory::Path<rw::math::Q>collisionPath;
@@ -139,6 +190,7 @@ void doneCb_col(const actionlib::SimpleClientGoalState& state,
     collisionPath.push_back(currentPath[i]);
     
   addPathToColl(collisionPath,goal_col);
+  //std::cout << "col path size: " << collisionPath.size() << std::endl;
   ac_col->sendGoal(goal_col, &doneCb_col);
 
 
@@ -186,9 +238,9 @@ void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
       }
       
     }
-    std::cout<<"Current dist: "<<(newPath[0]-conf_rw).norm2()<<"\n";
+    //std::cout<<"Current dist: "<<(newPath[0]-conf_rw).norm2()<<"\n";
 
-    std::cout<<"Improved dist: "<<(newPath[newPathIndex]-conf_rw).norm2()<<"\n";    
+    //std::cout<<"Improved dist: "<<(newPath[newPathIndex]-conf_rw).norm2()<<"\n";    
 
     currentPath.clear();
     for(size_t i =newPathIndex; i< newPath.size();i++)
@@ -206,7 +258,7 @@ void doneCb_rrt(const actionlib::SimpleClientGoalState& state,
       greed = -1.0;
     else
       greed= tempGreed;  
-    std::cout << "New greed: " << greed<<"\n";
+    //std::cout << "New greed: " << greed<<"\n";
 
     //Check where to splice the old path and new path.
   }
@@ -252,13 +304,13 @@ int main (int argc, char **argv)
   ROS_INFO("Action servers started, sending goal.");
   // send a goal to the action
   
-  rrt::RRTGoal goal_rrt;
+  //rrt::RRTGoal goal_rrt;
   
 
   goal_rrt.order = 20;
 
   //Start next collision test
-  collision::CollisionGoal goal_col;
+  //collision::CollisionGoal goal_col;
   goal_col.order = 20;
   //goal
 
@@ -268,6 +320,7 @@ int main (int argc, char **argv)
   //   collisionPath.push_back(currentPath[i]);
     
   // addPathToColl(collisionPath,goal_col);
+  goal_col.ballInPath = Ball;
   ac_col->sendGoal(goal_col, &doneCb_col);
 
   
@@ -307,13 +360,16 @@ int main (int argc, char **argv)
   //goal_rrt.start=pointA;
   //goal_rrt.end=pointB;
 
-  bool aToB = false;
-
+  bool aToB = true;
+  goal_rrt.ballInPath = false;
+  goal_col.ballInPath = false;
   std::cout<<"Starter while(true)!\n";
-  while(true)
+  start = std::chrono::steady_clock::now() ;
+   while(true)
   {
     //std::cout<<"while(true)\n";
     ros::spinOnce();
+    //std::cout << "wubawuba" << std::endl;
     if(!RRTReady)
       continue;
 
@@ -325,13 +381,28 @@ int main (int argc, char **argv)
       std::cout<<"Reached point A!\n";
       aToB = true;
       greed = -1.0;
+      hasPrinted = false;
+      //goal_rrt.ballInPath = false;
+      //goal_col.ballInPath = false;
+      std::cout << "ballInPath reset" << std::endl;
+      std::cout << "actually travelled distance: " << afstand << std::endl;
+      afstand = 0;
+      Ball = false;
+      start =  std::chrono::steady_clock::now() ;
     }
-
     if(Qequals(conf_rw,pointB,0.1) && aToB == true)
     {
       std::cout<<"Reached point B!\n";
       aToB = false;
       greed = -1.0;
+      hasPrinted = false;
+      //goal_rrt.ballInPath = false;
+      //goal_col.ballInPath = false;
+      std::cout << "ballInPath reset" << std::endl;
+      std::cout << "actually travelled distance: " << afstand << std::endl;
+      afstand = 0;
+      Ball = false;
+      start =  std::chrono::steady_clock::now() ;
     }
     //std::cout<<"Er det her?\n";
     if(currentPath.size()<10 && greed!= -1.0)
@@ -340,8 +411,19 @@ int main (int argc, char **argv)
     int jumpAhead=5;
     if(currentPath.size()>jumpAhead)
     {
-      goal_rrt.start=std::vector<double> {currentPath[jumpAhead][0],currentPath[jumpAhead][1],currentPath[jumpAhead][2],currentPath[jumpAhead][3],currentPath[jumpAhead][4],currentPath[jumpAhead][5]};
-      
+      //goal_rrt.start=std::vector<double> {currentPath[jumpAhead][0],currentPath[jumpAhead][1],currentPath[jumpAhead][2],currentPath[jumpAhead][3],currentPath[jumpAhead][4],currentPath[jumpAhead][5]};
+      millisecs_t duration( std::chrono::duration_cast<millisecs_t>(std::chrono::steady_clock::now()-start) ) ;
+      if(duration.count()>10000)
+      {
+        //std::cout << "counting " << duration2.count() << std::endl;
+        goal_rrt.start=std::vector<double> {currentPath[jumpAhead][0],currentPath[jumpAhead][1],currentPath[jumpAhead][2],currentPath[jumpAhead][3],currentPath[jumpAhead][4],currentPath[jumpAhead][5]};
+
+      }
+      else
+      {
+        goal_rrt.start=std::vector<double> {conf_rw[0],conf_rw[1],conf_rw[2],conf_rw[3],conf_rw[4],conf_rw[5]};
+      }  
+    
     }
     else
     {
@@ -349,7 +431,6 @@ int main (int argc, char **argv)
       
       greed=-1;
     }
-
     if(aToB)
       goal_rrt.end=pointB;
     else
@@ -360,8 +441,9 @@ int main (int argc, char **argv)
 
 
 
-    std::cout<<"Start RRT greed: "<<greed<<"\n";
+    //std::cout<<"Start RRT greed: "<<greed<<"\n";
     goal_rrt.greed = greed;
+    goal_rrt.ballInPath = Ball;
     
     
       ac_rrt->sendGoal(goal_rrt, &doneCb_rrt);

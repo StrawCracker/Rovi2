@@ -156,8 +156,8 @@ bool CellManager::spawnBall()
 bool CellManager::moveBall(double x, double y, double z)
 {
         rw::math::Transform3D<double> transform;
-        //transform.P()= rw::math::Vector3D<double> (x,y,z);
-        transform.P()= rw::math::Vector3D<double> (0.0,-0.343,0.513);
+        transform.P()= rw::math::Vector3D<double> (x,y,z);
+       // transform.P()= rw::math::Vector3D<double> (0.0,-0.343,0.513);
         //if(_state == NULL)
         //        rw::common::Log::log().info() << "State not found\n";
         //return false;
