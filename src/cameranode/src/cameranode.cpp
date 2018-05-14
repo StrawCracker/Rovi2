@@ -23,6 +23,8 @@
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/video/tracking.hpp"
+//#include "opencv2/core.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
 //#include "draw_utils.hpp"
 
 #define X_0 0		// start position x
