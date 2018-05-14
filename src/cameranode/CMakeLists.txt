@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  OpenCV
   message_generation
   caros_common_msgs
   caros_common_robwork
@@ -133,7 +134,7 @@ set(ROS_BUILD_SHARED_LIBS true)
 #target_link_libraries(RWSPlugin ${catkin_LIBRARIES})
 #add_library(rrt ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 add_executable(cameranode src/cameranode.cpp)
-target_link_libraries(cameranode ${catkin_LIBRARIES})
+target_link_libraries(cameranode ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(cameranode ${catkin_EXPORTED_TARGETS}})
 #
 
